@@ -58,7 +58,7 @@
   --space-s-l: clamp(1rem, 0.5843rem + 1.7738vw, 2.5rem);
 
   /* === Colors === */
-  --color-dark: #182411;
+  --color-dark: #0d2408;
   --color-white: #f4f6f4;
   --color-green: #50c34e;
   --color-light-green: #b3deb2;
@@ -119,11 +119,11 @@
 
   body {
     font-size: var(--text-0);
-    font-family: var(--font-pixel);
+    font-family: var(--font-noto-sans-thai);
     transition: ease-in-out;
     font-weight: 400;
-    background-color: var(--color-black);
-    color: var(--color-white);
+    background-color: var(--color-white);
+    color: var(--color-dark);
   }
 
   main {
