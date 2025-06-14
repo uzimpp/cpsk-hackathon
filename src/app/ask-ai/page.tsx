@@ -13,6 +13,16 @@ interface Message {
   content: string;
   role: "user" | "assistant";
   timestamp: Date;
+  documents?: Array<{
+    content: string;
+    metadata?: Record<string, any>;
+  }>;
+  usage?: {
+    user: string;
+    usage_count: number;
+    usage_limit: number;
+    remaining: number;
+  };
 }
 
 export default function AskAI() {
@@ -32,20 +42,43 @@ export default function AskAI() {
   }, [messages]);
 
   // Mock AI response
-  const getAIResponse = async (userMessage: string): Promise<string> => {
-    // Simulate API delay
-    await new Promise((resolve) =>
-      setTimeout(resolve, 1000 + Math.random() * 2000)
-    );
+  const getAIResponse = async (
+    userMessage: string
+  ): Promise<{
+    response: string;
+    documents?: Array<{ content: string; metadata?: Record<string, any> }>;
+    usage?: {
+      user: string;
+      usage_count: number;
+      usage_limit: number;
+      remaining: number;
+    };
+  }> => {
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ message: userMessage }),
+      });
 
-    const responses = [
-      `เข้าใจแล้วครับ! คำถามเกี่ยวกับ "${userMessage}" นั้นน่าสนใจมาก ให้ผมอธิบายให้ฟังนะครับ`,
-      `ขอบคุณสำหรับคำถามครับ เรื่อง "${userMessage}" มีรายละเอียดหลายประเด็นที่น่าสนใจ`,
-      `คำถามที่ดีมากครับ! เกี่ยวกับ "${userMessage}" นั้น มีหลายมุมมองที่เราสามารถพิจารณาได้`,
-      `ผมเข้าใจสิ่งที่คุณสงสัยแล้วครับ เรื่อง "${userMessage}" เป็นหัวข้อที่สำคัญมาก`,
-    ];
+      if (!response.ok) {
+        throw new Error("Failed to get AI response");
+      }
 
-    return responses[Math.floor(Math.random() * responses.length)];
+      const data = await response.json();
+      return {
+        response: data.response,
+        documents: data.documents,
+        usage: data.usage,
+      };
+    } catch (error) {
+      console.error("Error getting AI response:", error);
+      return {
+        response: "ขออภัย เกิดข้อผิดพลาดในการเชื่อมต่อกับ AI",
+      };
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -67,9 +100,11 @@ export default function AskAI() {
       const aiResponse = await getAIResponse(inputValue);
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: aiResponse,
+        content: aiResponse.response,
         role: "assistant",
         timestamp: new Date(),
+        documents: aiResponse.documents,
+        usage: aiResponse.usage,
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
@@ -237,6 +272,44 @@ export default function AskAI() {
                     >
                       {message.content}
                     </div>
+
+                    {message.role === "assistant" &&
+                      message.documents &&
+                      message.documents.length > 0 && (
+                        <div className="mt-4 pt-4 border-t border-gray-200">
+                          <h4
+                            className="text-sm font-semibold mb-2"
+                            style={{ color: "#174d20" }}
+                          >
+                            อ้างอิงจากเอกสาร:
+                          </h4>
+                          <div className="space-y-2">
+                            {message.documents.map((doc, index) => (
+                              <div
+                                key={index}
+                                className="text-sm p-2 bg-gray-50 rounded"
+                                style={{ color: "#182411" }}
+                              >
+                                {doc.content}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                    {message.role === "assistant" && message.usage && (
+                      <div
+                        className="mt-2 text-xs"
+                        style={{ color: "#174d20" }}
+                      >
+                        <div>ผู้ใช้: {message.usage.user}</div>
+                        <div>
+                          การใช้งาน: {message.usage.usage_count}/
+                          {message.usage.usage_limit}
+                        </div>
+                        <div>คงเหลือ: {message.usage.remaining}</div>
+                      </div>
+                    )}
                   </div>
 
                   <div

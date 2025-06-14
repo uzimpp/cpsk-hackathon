@@ -1,78 +1,34 @@
 {
-    "replies": {
-        "1": [
-            {
-                "id": "1-1",
-                "content": "สวัสดีครับ ผมเรียนวิศวะคอมเหมือนกัน ปี 3 ครับ",
-                "author": {
-                    "id": "6400000003",
-                    "name": "วิชัย เก่งคอม",
-                    "faculty": "วิศวกรรมศาสตร์",
-                    "major": "วิศวกรรมคอมพิวเตอร์",
-                    "year": "3",
-                    "avatar": "/avatars/student3.png"
-                },
-                "createdAt": "2024-03-20T10:15:00Z",
-                "likeCount": 2
-            },
-            {
-                "id": "1-2",
-                "content": "ยินดีต้อนรับครับ มีอะไรถามได้เลยนะครับ",
-                "author": {
-                    "id": "6400000004",
-                    "name": "วิชุดา ใจดี",
-                    "faculty": "วิศวกรรมศาสตร์",
-                    "major": "วิศวกรรมคอมพิวเตอร์",
-                    "year": "4",
-                    "avatar": "/avatars/student4.png"
-                },
-                "createdAt": "2024-03-20T10:30:00Z",
-                "likeCount": 1
-            },
-            {
-                "id": "1-3",
-                "content": "มีกิจกรรมอะไรแนะนำไหมครับ?",
-                "author": {
-                    "id": "6400000001",
-                    "name": "สมชาย ใจดี",
-                    "faculty": "วิศวกรรมศาสตร์",
-                    "major": "วิศวกรรมคอมพิวเตอร์",
-                    "year": "4",
-                    "avatar": "/avatars/student1.png"
-                },
-                "createdAt": "2024-03-20T11:00:00Z",
-                "likeCount": 0
-            }
-        ],
-        "2": [
-            {
-                "id": "2-1",
-                "content": "สนใจครับ ผมเรียนวิทยาการคอมพิวเตอร์ ปี 3 เหมือนกัน",
-                "author": {
-                    "id": "6400000005",
-                    "name": "วิทยา เก่งAI",
-                    "faculty": "วิทยาศาสตร์",
-                    "major": "วิทยาการคอมพิวเตอร์",
-                    "year": "3",
-                    "avatar": "/avatars/student5.png"
-                },
-                "createdAt": "2024-03-20T12:00:00Z",
-                "likeCount": 1
-            },
-            {
-                "id": "2-2",
-                "content": "มีประสบการณ์เกี่ยวกับ AI มาบ้างไหมครับ?",
-                "author": {
-                    "id": "6400000002",
-                    "name": "สมหญิง รักเรียน",
-                    "faculty": "วิทยาศาสตร์",
-                    "major": "วิทยาการคอมพิวเตอร์",
-                    "year": "3",
-                    "avatar": "/avatars/student2.png"
-                },
-                "createdAt": "2024-03-20T12:15:00Z",
-                "likeCount": 0
-            }
-        ]
-    }
+  "replies": {
+    "3": [
+      {
+        "id": "1749925989803",
+        "content": "asdasdsadasdasdasd",
+        "author": {
+          "id": "6400000000",
+          "name": "ผู้ใช้ใหม่",
+          "faculty": "วิศวกรรมศาสตร์",
+          "major": "วิศวกรรมคอมพิวเตอร์",
+          "year": "1",
+          "avatar": "/avatars/noprofilepic.png"
+        },
+        "createdAt": "2025-06-14T18:33:09.803Z",
+        "likeCount": 0
+      },
+      {
+        "id": "1749925987283",
+        "content": "asdas",
+        "author": {
+          "id": "6400000000",
+          "name": "ผู้ใช้ใหม่",
+          "faculty": "วิศวกรรมศาสตร์",
+          "major": "วิศวกรรมคอมพิวเตอร์",
+          "year": "1",
+          "avatar": "/avatars/noprofilepic.png"
+        },
+        "createdAt": "2025-06-14T18:33:07.283Z",
+        "likeCount": 0
+      }
+    ]
+  }
 }

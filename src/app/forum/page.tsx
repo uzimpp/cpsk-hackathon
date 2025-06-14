@@ -14,6 +14,9 @@ import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import Tag from "@/components/ui/Tag";
 import { getProfilePicUrl } from "@/utils/GetProfilePic";
+import { formatDistanceToNow } from "date-fns";
+import { th } from "date-fns/locale";
+import { FaEye, FaHeart, FaComment } from "react-icons/fa";
 
 // Type definitions
 interface Reply {
@@ -32,7 +35,9 @@ interface Reply {
 }
 
 interface RepliesData {
-  [postId: string]: Reply[];
+  replies: {
+    [key: string]: Reply[];
+  };
 }
 
 interface Post {
@@ -52,7 +57,7 @@ interface Post {
   tags: string[];
   viewCount: number;
   likeCount: number;
-  replyCount: number;
+  replyCount?: number;
 }
 
 // ข้อมูลคณะ
@@ -100,7 +105,6 @@ const initialPosts: Post[] = [
     tags: ["การเรียน", "คณะวิศวกรรมศาสตร์"],
     viewCount: 45,
     likeCount: 5,
-    replyCount: 12,
   },
   {
     id: "2",
@@ -119,7 +123,6 @@ const initialPosts: Post[] = [
     tags: ["การเรียน", "คณะวิทยาศาสตร์"],
     viewCount: 32,
     likeCount: 3,
-    replyCount: 8,
   },
   {
     id: "3",
@@ -138,7 +141,6 @@ const initialPosts: Post[] = [
     tags: ["การแต่งกาย", "คณะมนุษยศาสตร์"],
     viewCount: 28,
     likeCount: 2,
-    replyCount: 5,
   },
 ];
 
@@ -160,7 +162,7 @@ export default function Forum() {
   const [replyText, setReplyText] = useState("");
   const [localPosts, setLocalPosts] = useState<Post[]>(postsData.posts);
   const [localReplies, setLocalReplies] = useState<RepliesData>(
-    repliesData.replies
+    repliesData as RepliesData
   );
   const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
   const [likedReplies, setLikedReplies] = useState<Set<string>>(new Set());
@@ -177,8 +179,13 @@ export default function Forum() {
     return matchesSearch && matchesTag;
   });
 
+  // Get reply count for a post
+  const getReplyCount = (postId: string) => {
+    return (localReplies.replies[postId] || []).length;
+  };
+
   // ฟังก์ชันสร้างโพสใหม่
-  const handleCreatePost = () => {
+  const handleCreatePost = async () => {
     if (newPost.title.trim() && newPost.content.trim()) {
       const post: Post = {
         id: Date.now().toString(),
@@ -197,9 +204,32 @@ export default function Forum() {
         tags: [newPost.category],
         viewCount: 1,
         likeCount: 0,
-        replyCount: 0,
       };
-      setLocalPosts([...localPosts, post]);
+
+      const updatedPosts = [...localPosts, post];
+      setLocalPosts(updatedPosts);
+
+      // Save to JSON
+      try {
+        const response = await fetch("/api/forum", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            type: "posts",
+            data: updatedPosts,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to save post");
+        }
+      } catch (error) {
+        console.error("Error saving post:", error);
+        // Optionally show an error message to the user
+      }
+
       setNewPost({
         title: "",
         content: "",
@@ -211,7 +241,7 @@ export default function Forum() {
   };
 
   // ฟังก์ชันตอบกระทู้
-  const handleReply = (postId: string) => {
+  const handleReply = async (postId: string) => {
     if (replyText.trim()) {
       const newReply: Reply = {
         id: `${postId}-${Date.now()}`,
@@ -228,19 +258,52 @@ export default function Forum() {
         likeCount: 0,
       };
 
-      setLocalReplies({
+      const updatedReplies = {
         ...localReplies,
-        [postId]: [...(localReplies[postId] || []), newReply],
-      });
+        replies: {
+          ...localReplies.replies,
+          [postId]: [...(localReplies.replies[postId] || []), newReply],
+        },
+      };
 
-      // Update reply count in the post
-      setLocalPosts(
-        localPosts.map((post) =>
-          post.id === postId
-            ? { ...post, replyCount: post.replyCount + 1 }
-            : post
-        )
+      setLocalReplies(updatedReplies);
+
+      // Update reply count in the post based on actual replies length
+      const updatedPosts = localPosts.map((post) =>
+        post.id === postId
+          ? { ...post, replyCount: updatedReplies.replies[postId].length }
+          : post
       );
+      setLocalPosts(updatedPosts);
+
+      // Save to JSON
+      try {
+        // Save replies
+        await fetch("/api/forum", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            type: "replies",
+            data: updatedReplies,
+          }),
+        });
+
+        // Save updated post
+        await fetch("/api/forum", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            type: "posts",
+            data: updatedPosts,
+          }),
+        });
+      } catch (error) {
+        console.error("Error saving reply:", error);
+      }
 
       setReplyText("");
     }
@@ -274,7 +337,7 @@ export default function Forum() {
   // Handle reply like
   const handleReplyLike = (postId: string, replyId: string) => {
     setLocalReplies((prev) => {
-      const postReplies = prev[postId] || [];
+      const postReplies = prev.replies[postId] || [];
       const updatedReplies = postReplies.map((reply) => {
         if (reply.id === replyId) {
           const isLiked = likedReplies.has(replyId);
@@ -294,7 +357,7 @@ export default function Forum() {
         }
         return reply;
       });
-      return { ...prev, [postId]: updatedReplies };
+      return { replies: { ...prev.replies, [postId]: updatedReplies } };
     });
   };
 
@@ -365,7 +428,7 @@ export default function Forum() {
                   <div className="flex items-center gap-6 text-sm text-gray-500">
                     <div className="flex items-center gap-1">
                       <ChatBubbleLeftIcon className="h-5 w-5" />
-                      <span>{post.replyCount} ความคิดเห็น</span>
+                      <span>{getReplyCount(post.id)} ความคิดเห็น</span>
                     </div>
                     <button
                       onClick={(e) => {

@@ -47,7 +47,8 @@ export default function TopicPage() {
 
   // Find the post
   const post = postsData.posts.find((p) => p.id === topicId);
-  // Get replies for this post (initialize local state for replies)
+
+  // Get replies for this post
   const [replies, setReplies] = useState<Reply[]>(
     repliesData.replies[topicId] || []
   );
@@ -63,13 +64,33 @@ export default function TopicPage() {
     );
   }
 
-  const handlePostLike = () => {
+  const handlePostLike = async () => {
     setLikedPost(!likedPost);
     // In a real app, you would update the post's like count in the database
     post.likeCount = likedPost ? post.likeCount - 1 : post.likeCount + 1;
+
+    // Save updated post
+    try {
+      const updatedPosts = postsData.posts.map((p) =>
+        p.id === post.id ? post : p
+      );
+
+      await fetch("/api/forum", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          type: "posts",
+          data: updatedPosts,
+        }),
+      });
+    } catch (error) {
+      console.error("Error saving post like:", error);
+    }
   };
 
-  const handleReplyLike = (replyId: string) => {
+  const handleReplyLike = async (replyId: string) => {
     setLikedReplies((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(replyId)) {
@@ -80,21 +101,42 @@ export default function TopicPage() {
       return newSet;
     });
 
-    setReplies(
-      replies.map((reply) => {
-        if (reply.id === replyId) {
-          const isLiked = likedReplies.has(replyId);
-          return {
-            ...reply,
-            likeCount: isLiked ? reply.likeCount - 1 : reply.likeCount + 1,
-          };
-        }
-        return reply;
-      })
-    );
+    const updatedReplies = replies.map((reply) => {
+      if (reply.id === replyId) {
+        const isLiked = likedReplies.has(replyId);
+        return {
+          ...reply,
+          likeCount: isLiked ? reply.likeCount - 1 : reply.likeCount + 1,
+        };
+      }
+      return reply;
+    });
+
+    setReplies(updatedReplies);
+
+    // Save updated replies
+    try {
+      const updatedRepliesData = {
+        ...repliesData.replies,
+        [topicId]: updatedReplies,
+      };
+
+      await fetch("/api/forum", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          type: "replies",
+          data: updatedRepliesData,
+        }),
+      });
+    } catch (error) {
+      console.error("Error saving reply like:", error);
+    }
   };
 
-  const handleSubmitReply = (e: React.FormEvent) => {
+  const handleSubmitReply = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!replyContent.trim()) return;
     // Mock user for reply (replace with real user if available)
@@ -113,8 +155,31 @@ export default function TopicPage() {
       createdAt: new Date().toISOString(),
       likeCount: 0,
     };
-    setReplies([newReply, ...replies]);
+
+    const updatedReplies = [newReply, ...replies];
+    setReplies(updatedReplies);
     setReplyContent("");
+
+    // Save updated replies
+    try {
+      const updatedRepliesData = {
+        ...repliesData.replies,
+        [topicId]: updatedReplies,
+      };
+
+      await fetch("/api/forum", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          type: "replies",
+          data: updatedRepliesData,
+        }),
+      });
+    } catch (error) {
+      console.error("Error saving reply:", error);
+    }
   };
 
   return (
