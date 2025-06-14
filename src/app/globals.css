@@ -58,13 +58,11 @@
   --space-s-l: clamp(1rem, 0.5843rem + 1.7738vw, 2.5rem);
 
   /* === Colors === */
-  --color-black: #1a1a1a;
-  --color-dark-purple: #231d24;
-  --color-light-purple: #514454;
-  --color-pink: #fd68ce;
-  --color-green: #b7e862;
-  --color-blue: #547eff;
-  --color-white: #f2ecf4;
+  --color-dark: #182411;
+  --color-white: #f4f6f4;
+  --color-green: #50c34e;
+  --color-light-green: #b3deb2;
+  --color-dark-green: #174d20;
 
   /* === Border Radius === */
   --border-radius-sm: 0.25rem;
