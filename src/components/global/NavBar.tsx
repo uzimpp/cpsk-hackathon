@@ -35,6 +35,12 @@ export default function NavBar() {
             >
               ปฏิทิน
             </Link>
+            <Link
+              href="/news"
+              className="text-white hover:text-light-green px-3 py-2 rounded-md text-sm font-medium"
+            >
+              ข่าวสาร
+            </Link>
           </div>
 
           <div className="flex items-center">
