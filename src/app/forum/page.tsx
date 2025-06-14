@@ -14,9 +14,6 @@ import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import Tag from "@/components/ui/Tag";
 import { getProfilePicUrl } from "@/utils/GetProfilePic";
-import { formatDistanceToNow } from "date-fns";
-import { th } from "date-fns/locale";
-import { FaEye, FaHeart, FaComment } from "react-icons/fa";
 
 // Type definitions
 interface Reply {
@@ -85,73 +82,17 @@ const faculties = [
 // ข้อมูลหมวดหมู่
 const categories = ["การเรียน", "การแต่งกาย", "กิจกรรม", "ทั่วไป"];
 
-// ข้อมูลตัวอย่างโพส
-const initialPosts: Post[] = [
-  {
-    id: "1",
-    title: "ขอคำแนะนำเรื่องการเรียนภาคฤดูร้อน",
-    content:
-      "อยากถามว่าการเรียนภาคฤดูร้อนจะเหนื่อยมากไหมครับ และมีคำแนะนำอะไรบ้าง",
-    author: {
-      id: "1",
-      name: "นศ.วิศวกรรม",
-      faculty: "คณะวิศวกรรมศาสตร์",
-      major: "วิศวกรรมศาสตร์",
-      year: "2",
-      avatar: "/avatar1.jpg",
-    },
-    createdAt: "2024-04-01T10:00:00",
-    updatedAt: "2024-04-01T10:00:00",
-    tags: ["การเรียน", "คณะวิศวกรรมศาสตร์"],
-    viewCount: 45,
-    likeCount: 5,
-  },
-  {
-    id: "2",
-    title: "หาเพื่อนทำงานกลุ่มวิชา Data Structure",
-    content: "มีใครเรียนวิชา Data Structure ที่อยากทำงานกลุ่มด้วยกันไหมครับ",
-    author: {
-      id: "2",
-      name: "คอมพิวเตอร์ปี 2",
-      faculty: "คณะวิทยาศาสตร์",
-      major: "วิทยาศาสตร์",
-      year: "2",
-      avatar: "/avatar2.jpg",
-    },
-    createdAt: "2024-04-01T12:00:00",
-    updatedAt: "2024-04-01T12:00:00",
-    tags: ["การเรียน", "คณะวิทยาศาสตร์"],
-    viewCount: 32,
-    likeCount: 3,
-  },
-  {
-    id: "3",
-    title: "กฎระเบียบการแต่งกายของมหาลัย",
-    content: "ใครรู้กฎการแต่งกายสำหรับการสอบปลายภาคบ้างครับ",
-    author: {
-      id: "3",
-      name: "นักศึกษาใหม่",
-      faculty: "คณะมนุษยศาสตร์",
-      major: "มนุษยศาสตร์",
-      year: "1",
-      avatar: "/avatar3.jpg",
-    },
-    createdAt: "2024-04-01T14:00:00",
-    updatedAt: "2024-04-01T14:00:00",
-    tags: ["การแต่งกาย", "คณะมนุษยศาสตร์"],
-    viewCount: 28,
-    likeCount: 2,
-  },
-];
-
 export default function Forum() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedTag, setSelectedTag] = useState<string | null>(null);
-  const [selectedFaculty, setSelectedFaculty] = useState("ทุกคณะ");
+  const [selectedTag, setSelectedTag] = useState<string[]>([]);
+  const [selectedFaculty, setSelectedFaculty] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("ทุกหมวดหมู่");
   const [isFacultyDropdownOpen, setIsFacultyDropdownOpen] = useState(false);
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
   const [isCreatePostOpen, setIsCreatePostOpen] = useState(false);
+  const [isTagPanelOpen, setIsTagPanelOpen] = useState(false);
+  const [selectedSortOption, setSelectedSortOption] = useState("newest");
+  const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
   const [newPost, setNewPost] = useState({
     title: "",
     content: "",
@@ -170,14 +111,40 @@ export default function Forum() {
   // Get all unique tags from posts
   const allTags = Array.from(new Set(localPosts.flatMap((post) => post.tags)));
 
-  // Filter posts based on search query and selected tag
-  const filteredPosts = localPosts.filter((post) => {
-    const matchesSearch =
-      post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      post.content.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesTag = !selectedTag || post.tags.includes(selectedTag);
-    return matchesSearch && matchesTag;
-  });
+  // Filter and sort posts based on search query, selected tag, faculty, and sort option
+  const filteredAndSortedPosts = [...localPosts]
+    .filter((post) => {
+      const matchesSearch =
+        post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        post.content.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesTag =
+        selectedTag.length === 0 ||
+        selectedTag.some((tag) => post.tags.includes(tag));
+      const matchesFaculty =
+        selectedFaculty.length === 0 ||
+        selectedFaculty.some((faculty) => post.author.faculty === faculty);
+      return matchesSearch && matchesTag && matchesFaculty;
+    })
+    .sort((a, b) => {
+      if (selectedSortOption === "newest") {
+        return (
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        );
+      } else if (selectedSortOption === "oldest") {
+        return (
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        );
+      } else if (selectedSortOption === "most_likes") {
+        return b.likeCount - a.likeCount;
+      } else if (selectedSortOption === "least_likes") {
+        return a.likeCount - b.likeCount;
+      } else if (selectedSortOption === "most_views") {
+        return b.viewCount - a.viewCount;
+      } else if (selectedSortOption === "least_views") {
+        return a.viewCount - b.viewCount;
+      }
+      return 0;
+    });
 
   // Get reply count for a post
   const getReplyCount = (postId: string) => {
@@ -362,71 +329,287 @@ export default function Forum() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
+    <div className="max-w-5xl mx-auto px-4 py-12">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+      <div className="mb-12 text-center">
+        <h1 className="text-4xl font-bold text-gray-900 mb-4">
           KU Connect Forum
         </h1>
-        <p className="text-gray-600 mb-6">
+        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
           แบ่งปันความคิดเห็นและพูดคุยกับเพื่อนๆ ในมหาวิทยาลัย
         </p>
       </div>
 
       {/* Search and Filter */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-8 items-center">
-        <input
-          type="text"
-          placeholder="ค้นหาหัวข้อหรือเนื้อหา..."
-          className="flex-1 px-4 py-2 border-2 border-[#22c55e] rounded-lg focus:ring-2 focus:ring-[#22c55e] focus:border-[#22c55e]"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-        <div className="flex gap-2 overflow-x-auto pb-2">
+      <div className="flex flex-col gap-6 mb-12">
+        {/* Top row: Search, Faculty, หัวข้อ, Filter, Reset */}
+        <div className="flex items-center gap-4 w-full">
+          {/* Search Input */}
+          <div className="relative flex-1">
+            <input
+              type="text"
+              placeholder="search"
+              className="w-full px-6 py-4 text-lg border-2 border-gray-300 rounded-xl focus:ring-4 focus:ring-[#22c55e]/20 focus:border-[#22c55e] transition-all"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+
+          {/* New Faculty Dropdown Button */}
           <Button
-            className={`!px-4 !py-2 !rounded-full !bg-white !text-[#22c55e] !border !border-[#22c55e] !font-medium ${
-              selectedTag === null ? "!bg-[#22c55e] !text-white" : ""
-            }`}
+            className="!px-6 !py-3 !rounded-xl !bg-[#22c55e] !text-white !font-medium !text-lg transition-all hover:!bg-[#16a34a] flex items-center gap-2"
             type="button"
-            onClick={() => setSelectedTag(null)}
+            onClick={() => {
+              setIsFacultyDropdownOpen((prev) => !prev);
+              setIsTagPanelOpen(false);
+              setIsSortDropdownOpen(false);
+            }}
           >
-            ทั้งหมด
+            คณะ
+            <svg
+              className={`w-5 h-5 transform transition-transform ${
+                isFacultyDropdownOpen ? "rotate-180" : "rotate-0"
+              }`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
           </Button>
-          {allTags.map((tag) => (
+
+          {/* หัวข้อ (Topic) Button */}
+          <Button
+            className="!px-6 !py-3 !rounded-xl !bg-white !text-gray-700 !border-2 !border-gray-300 !font-medium !text-lg transition-all hover:!bg-gray-100 flex items-center gap-2"
+            type="button"
+            onClick={() => {
+              setIsTagPanelOpen((prev) => !prev);
+              setIsFacultyDropdownOpen(false);
+              setIsSortDropdownOpen(false);
+            }}
+          >
+            หัวข้อ
+            <svg
+              className={`w-5 h-5 transform transition-transform ${
+                isTagPanelOpen ? "rotate-180" : "rotate-0"
+              }`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </Button>
+
+          {/* Sort Button and Dropdown */}
+          <div className="relative">
             <Button
-              key={tag}
-              className={`!px-4 !py-2 !rounded-full !bg-white !text-[#22c55e] !border !border-[#22c55e] !font-medium ${
-                selectedTag === tag ? "!bg-[#22c55e] !text-white" : ""
+              className="!px-6 !py-3 !rounded-xl !bg-white !text-gray-700 !border-2 !border-gray-300 !font-medium !text-lg transition-all hover:!bg-gray-100 flex items-center gap-2"
+              type="button"
+              onClick={() => {
+                setIsSortDropdownOpen((prev) => !prev);
+                setIsFacultyDropdownOpen(false);
+                setIsTagPanelOpen(false);
+              }}
+            >
+              {selectedSortOption === "newest"
+                ? "ใหม่สุด"
+                : selectedSortOption === "oldest"
+                ? "เก่าสุด"
+                : selectedSortOption === "most_likes"
+                ? "ยอดไลค์มากสุด"
+                : selectedSortOption === "least_likes"
+                ? "ยอดไลค์น้อยสุด"
+                : selectedSortOption === "most_views"
+                ? "ยอดวิวมากสุด"
+                : selectedSortOption === "least_views"
+                ? "ยอดวิวน้อยสุด"
+                : "เรียงลำดับ"}
+              <svg
+                className={`w-5 h-5 transform transition-transform ${
+                  isSortDropdownOpen ? "rotate-180" : "rotate-0"
+                }`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </Button>
+
+            {isSortDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-10">
+                {[
+                  {
+                    label: "ใหม่สุด",
+                    value: "newest",
+                  },
+                  {
+                    label: "เก่าสุด",
+                    value: "oldest",
+                  },
+                  {
+                    label: "ยอดไลค์มากสุด",
+                    value: "most_likes",
+                  },
+                  {
+                    label: "ยอดไลค์น้อยสุด",
+                    value: "least_likes",
+                  },
+                  {
+                    label: "ยอดวิวมากสุด",
+                    value: "most_views",
+                  },
+                  {
+                    label: "ยอดวิวน้อยสุด",
+                    value: "least_views",
+                  },
+                ].map((option) => (
+                  <button
+                    key={option.value}
+                    className={`block w-full text-left px-4 py-2 text-base font-medium transition-all ${
+                      selectedSortOption === option.value
+                        ? "bg-[#22c55e] text-white"
+                        : "text-gray-700 hover:bg-gray-100"
+                    }`}
+                    onClick={() => {
+                      setSelectedSortOption(option.value);
+                      setIsSortDropdownOpen(false);
+                    }}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Clear Buttons */}
+          <Button
+            className="!px-4 !py-2 !rounded-xl !bg-white !text-gray-700 !border-2 !border-gray-300 !font-medium !text-base transition-all hover:!bg-gray-100"
+            type="button"
+            onClick={() => {
+              setSearchQuery("");
+              setSelectedFaculty([]);
+              setSelectedTag([]);
+              setSelectedSortOption("newest");
+              setIsFacultyDropdownOpen(false);
+              setIsTagPanelOpen(false);
+              setIsSortDropdownOpen(false);
+            }}
+          >
+            ล้าง
+          </Button>
+        </div>
+
+        {/* Expanded Faculty Filter Area (green box) */}
+        {isFacultyDropdownOpen && (
+          <div className="w-full bg-[#E6F4EA] rounded-xl p-6 flex flex-wrap gap-3 items-center">
+            {faculties.map((faculty) => (
+              <Button
+                key={faculty}
+                className={`!px-5 !py-2 !rounded-full !bg-white !text-gray-700 !border-2 !border-gray-300 !font-medium !text-base transition-all ${
+                  selectedFaculty.includes(faculty) ||
+                  (faculty === "ทุกคณะ" && selectedFaculty.length === 0)
+                    ? "!bg-[#22c55e] !text-white !border-[#22c55e]"
+                    : "hover:!bg-gray-100"
+                }`}
+                type="button"
+                onClick={() => {
+                  setSelectedFaculty((prevSelectedFaculties) => {
+                    if (faculty === "ทุกคณะ") {
+                      return [];
+                    } else if (prevSelectedFaculties.includes(faculty)) {
+                      return prevSelectedFaculties.filter((f) => f !== faculty);
+                    } else {
+                      return [...prevSelectedFaculties, faculty];
+                    }
+                  });
+                }}
+              >
+                {faculty}
+              </Button>
+            ))}
+          </div>
+        )}
+
+        {/* Expanded tag filter area (green box) */}
+        {isTagPanelOpen && (
+          <div className="w-full bg-[#E6F4EA] rounded-xl p-6 flex flex-wrap gap-3 items-center">
+            <Button
+              className={`!px-5 !py-2 !rounded-full !bg-white !text-gray-700 !border-2 !border-gray-300 !font-medium !text-base transition-all ${
+                selectedTag.length === 0
+                  ? "!bg-[#22c55e] !text-white !border-[#22c55e]"
+                  : "hover:!bg-gray-100"
               }`}
               type="button"
-              onClick={() => setSelectedTag(tag)}
+              onClick={() => setSelectedTag([])}
             >
-              {tag}
+              ทั้งหมด
             </Button>
-          ))}
-        </div>
+            {allTags.map((tag) => (
+              <Button
+                key={tag}
+                className={`!px-5 !py-2 !rounded-full !bg-white !text-gray-700 !border-2 !border-gray-300 !font-medium !text-base transition-all ${
+                  selectedTag.includes(tag)
+                    ? "!bg-[#22c55e] !text-white !border-[#22c55e]"
+                    : "hover:!bg-gray-100"
+                }`}
+                type="button"
+                onClick={() => {
+                  setSelectedTag((prevSelectedTags) => {
+                    if (prevSelectedTags.includes(tag)) {
+                      return prevSelectedTags.filter((t) => t !== tag);
+                    } else {
+                      return [...prevSelectedTags, tag];
+                    }
+                  });
+                }}
+              >
+                {tag}
+              </Button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Posts List */}
-      <div className="space-y-6">
-        {filteredPosts.map((post) => (
+      <div className="space-y-8">
+        {filteredAndSortedPosts.map((post) => (
           <Link href={`/forum/${post.id}`} key={post.id} className="block">
-            <Card className="mb-2 hover:shadow-lg transition-shadow cursor-pointer">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
+            <Card className="mb-2 hover:shadow-xl transition-all duration-300 cursor-pointer border-2 border-gray-100">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 p-6">
                 <div className="flex-1">
-                  <h2 className="text-xl font-bold text-gray-900 mb-1">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-3">
                     {post.title}
                   </h2>
-                  <p className="text-gray-700 mb-2 line-clamp-2">
+                  <p className="text-gray-700 mb-4 line-clamp-2 text-lg">
                     {post.content}
                   </p>
-                  <div className="flex flex-wrap gap-2 mb-2">
+                  <div className="flex flex-wrap gap-2 mb-4">
                     {post.tags.map((tag) => (
-                      <Tag key={tag}>{tag}</Tag>
+                      <Tag key={tag} className="!px-4 !py-2 !text-sm">
+                        {tag}
+                      </Tag>
                     ))}
                   </div>
-                  <div className="flex items-center gap-6 text-sm text-gray-500">
-                    <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-8 text-sm text-gray-500">
+                    <div className="flex items-center gap-2">
                       <ChatBubbleLeftIcon className="h-5 w-5" />
                       <span>{getReplyCount(post.id)} ความคิดเห็น</span>
                     </div>
@@ -435,10 +618,10 @@ export default function Forum() {
                         e.preventDefault();
                         handlePostLike(post.id);
                       }}
-                      className="flex items-center gap-1 hover:text-[#22c55e] transition-colors"
+                      className="flex items-center gap-2 hover:text-[#22c55e] transition-colors"
                     >
                       <HeartIcon
-                        className={`h-5 w-5 ${
+                        className={`h-5 w-5 transition-transform hover:scale-110 ${
                           likedPosts.has(post.id)
                             ? "fill-[#22c55e] text-[#22c55e]"
                             : ""
@@ -446,15 +629,15 @@ export default function Forum() {
                       />
                       <span>{post.likeCount} ถูกใจ</span>
                     </button>
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-2">
                       <EyeIcon className="h-5 w-5" />
                       <span>{post.viewCount} ดู</span>
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 min-w-[180px] justify-end">
+                <div className="flex items-center gap-4 min-w-[200px] justify-end">
                   <div className="text-right">
-                    <p className="font-medium text-gray-900">
+                    <p className="font-semibold text-gray-900 text-lg">
                       {post.author.name}
                     </p>
                     <p className="text-sm text-gray-500">
@@ -462,7 +645,7 @@ export default function Forum() {
                       {post.author.year}
                     </p>
                   </div>
-                  <div className="h-10 w-10 rounded-full bg-gray-200 overflow-hidden">
+                  <div className="h-12 w-12 rounded-full bg-gray-200 overflow-hidden ring-2 ring-[#22c55e]">
                     <img
                       src={getProfilePicUrl(post.author.avatar)}
                       alt={post.author.name}
@@ -481,26 +664,68 @@ export default function Forum() {
       </div>
 
       {/* Empty State */}
-      {filteredPosts.length === 0 && (
-        <Card className="text-center py-12 mt-8">
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
+      {filteredAndSortedPosts.length === 0 && (
+        <Card className="text-center py-16 mt-8 border-2 border-gray-100">
+          <h3 className="text-2xl font-semibold text-gray-900 mb-4">
             ไม่พบโพสต์ที่ค้นหา
           </h3>
-          <p className="text-gray-500">ลองค้นหาด้วยคำอื่นหรือล้างตัวกรอง</p>
+          <p className="text-gray-500 text-lg">
+            ลองค้นหาด้วยคำอื่นหรือล้างตัวกรอง
+          </p>
         </Card>
       )}
 
+      {/* Floating Action Button */}
+      <button
+        onClick={() => setIsCreatePostOpen(true)}
+        className="fixed bottom-8 right-8 bg-[#22c55e] text-white p-4 rounded-full shadow-lg hover:bg-[#16a34a] transition-all duration-300 hover:scale-110"
+      >
+        <svg
+          className="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 4v16m8-8H4"
+          />
+        </svg>
+      </button>
+
       {/* Create Post Modal */}
       {isCreatePostOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <h2 className="text-2xl font-bold text-dark mb-6">
-              สร้างกระทู้ใหม่
-            </h2>
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-8 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-8">
+              <h2 className="text-3xl font-bold text-gray-900">
+                สร้างกระทู้ใหม่
+              </h2>
+              <button
+                onClick={() => setIsCreatePostOpen(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
 
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div>
-                <label className="block text-dark font-medium mb-2">
+                <label className="block text-gray-700 font-medium mb-2 text-lg">
                   เลือกคณะ:
                 </label>
                 <select
@@ -508,7 +733,7 @@ export default function Forum() {
                   onChange={(e) =>
                     setNewPost({ ...newPost, faculty: e.target.value })
                   }
-                  className="w-full border-2 border-light-green rounded-lg p-3 text-dark focus:border-green focus:outline-none"
+                  className="w-full border-2 border-[#22c55e] rounded-xl p-4 text-gray-700 focus:ring-4 focus:ring-[#22c55e]/20 focus:border-[#22c55e] transition-all"
                 >
                   {faculties.map((faculty) => (
                     <option key={faculty} value={faculty}>
@@ -519,7 +744,7 @@ export default function Forum() {
               </div>
 
               <div>
-                <label className="block text-dark font-medium mb-2">
+                <label className="block text-gray-700 font-medium mb-2 text-lg">
                   เลือกหมวดหมู่:
                 </label>
                 <select
@@ -527,7 +752,7 @@ export default function Forum() {
                   onChange={(e) =>
                     setNewPost({ ...newPost, category: e.target.value })
                   }
-                  className="w-full border-2 border-light-green rounded-lg p-3 text-dark focus:border-green focus:outline-none"
+                  className="w-full border-2 border-[#22c55e] rounded-xl p-4 text-gray-700 focus:ring-4 focus:ring-[#22c55e]/20 focus:border-[#22c55e] transition-all"
                 >
                   {categories.map((category) => (
                     <option key={category} value={category}>
@@ -538,7 +763,7 @@ export default function Forum() {
               </div>
 
               <div>
-                <label className="block text-dark font-medium mb-2">
+                <label className="block text-gray-700 font-medium mb-2 text-lg">
                   หัวข้อ:
                 </label>
                 <input
@@ -548,12 +773,12 @@ export default function Forum() {
                     setNewPost({ ...newPost, title: e.target.value })
                   }
                   placeholder="หัวข้อกระทู้"
-                  className="w-full border-2 border-light-green rounded-lg p-3 text-dark focus:border-green focus:outline-none"
+                  className="w-full border-2 border-[#22c55e] rounded-xl p-4 text-gray-700 focus:ring-4 focus:ring-[#22c55e]/20 focus:border-[#22c55e] transition-all"
                 />
               </div>
 
               <div>
-                <label className="block text-dark font-medium mb-2">
+                <label className="block text-gray-700 font-medium mb-2 text-lg">
                   เนื้อหา:
                 </label>
                 <textarea
@@ -562,22 +787,22 @@ export default function Forum() {
                     setNewPost({ ...newPost, content: e.target.value })
                   }
                   placeholder="เขียนรายละเอียด..."
-                  className="w-full border-2 border-light-green rounded-lg p-3 text-dark resize-none focus:border-green focus:outline-none"
+                  className="w-full border-2 border-[#22c55e] rounded-xl p-4 text-gray-700 resize-none focus:ring-4 focus:ring-[#22c55e]/20 focus:border-[#22c55e] transition-all"
                   rows={6}
                 />
               </div>
             </div>
 
-            <div className="flex justify-end space-x-4 mt-6">
+            <div className="flex justify-end space-x-4 mt-8">
               <button
                 onClick={() => setIsCreatePostOpen(false)}
-                className="px-6 py-2 border-2 border-light-green text-dark rounded-lg hover:bg-light-green transition-colors"
+                className="px-8 py-3 border-2 border-[#22c55e] text-[#22c55e] rounded-xl hover:bg-[#22c55e]/10 transition-all font-medium"
               >
                 ยกเลิก
               </button>
               <button
                 onClick={handleCreatePost}
-                className="px-6 py-2 bg-green text-white rounded-lg hover:opacity-90 transition-opacity"
+                className="px-8 py-3 bg-[#22c55e] text-white rounded-xl hover:bg-[#16a34a] transition-all font-medium"
               >
                 โพสกระทู้
               </button>
