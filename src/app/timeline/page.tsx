@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { 
   MagnifyingGlassIcon,
   CalendarIcon,
@@ -133,20 +133,32 @@ export default function AcademicCalendar() {
     return false;
   };
 
-  // Animation on scroll
+  // Animation on scroll - Optimized
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
+        const newVisibleIds: string[] = [];
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             const eventId = entry.target.getAttribute('data-event-id');
             if (eventId) {
-              setVisibleEvents(prev => new Set([...prev, eventId]));
+              newVisibleIds.push(eventId);
             }
           }
         });
+        
+        if (newVisibleIds.length > 0) {
+          setVisibleEvents(prev => {
+            const updated = new Set(prev);
+            newVisibleIds.forEach(id => updated.add(id));
+            return updated;
+          });
+        }
       },
-      { threshold: 0.3 }
+      { 
+        threshold: 0.1, // Reduced threshold for faster triggering
+        rootMargin: '100px 0px' // Pre-load animations
+      }
     );
 
     const eventElements = document.querySelectorAll('[data-event-id]');
@@ -155,13 +167,15 @@ export default function AcademicCalendar() {
     return () => observer.disconnect();
   }, [events]);
 
-  // Filter events
-  const filteredEvents = events.filter(event => {
-    const matchesSearch = event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         event.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || event.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+  // Filter events - Memoized
+  const filteredEvents = useMemo(() => {
+    return events.filter(event => {
+      const matchesSearch = event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           event.description.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCategory = selectedCategory === 'all' || event.category === selectedCategory;
+      return matchesSearch && matchesCategory;
+    });
+  }, [events, searchTerm, selectedCategory]);
 
   const completedCount = events.filter(e => isEventCompleted(e)).length;
   const progressPercentage = events.length > 0 ? (completedCount / events.length) * 100 : 0;
@@ -347,18 +361,21 @@ export default function AcademicCalendar() {
                 <div 
                   key={event.id} 
                   data-event-id={event.id}
-                  className={`relative flex mb-12 group transition-all duration-700 ${
+                  className={`relative flex mb-12 group transition-opacity duration-500 ${
                     isVisible 
                       ? isCompleted 
-                        ? 'opacity-40 translate-x-0' 
-                        : 'opacity-100 translate-x-0'
-                      : 'opacity-0 translate-x-8'
+                        ? 'opacity-40' 
+                        : 'opacity-100'
+                      : 'opacity-0'
                   }`}
-                  style={{ transitionDelay: `${idx * 150}ms` }}
+                  style={{ 
+                    transitionDelay: `${Math.min(idx * 100, 500)}ms`,
+                    willChange: isVisible ? 'auto' : 'opacity'
+                  }}
                 >
                   {/* Date */}
                   <div className="absolute -left-[240px] w-[220px] text-right top-0">
-                    <div className="bg-gradient-to-r from-white to-gray-50 p-4 rounded-xl shadow-sm border-l-4 transition-all duration-200 group-hover:shadow-md"
+                    <div className="bg-gradient-to-r from-white to-gray-50 p-4 rounded-xl shadow-sm border-l-4 transition-shadow duration-200 group-hover:shadow-md"
                          style={{ borderColor: event.color }}>
                       <div className="flex items-center justify-end gap-2 text-xs mb-2 text-gray-500">
                         <CalendarIcon className="w-3 h-3" />
@@ -378,7 +395,7 @@ export default function AcademicCalendar() {
                   {/* Timeline Point */}
                   <div className="relative w-[60px] flex justify-center items-center">
                     <div 
-                      className={`w-5 h-5 rounded-full border-4 border-white shadow-xl transition-all duration-300 group-hover:scale-150 ${
+                      className={`w-5 h-5 rounded-full border-4 border-white shadow-xl transition-transform duration-200 group-hover:scale-125 ${
                         isCompleted ? 'animate-pulse' : ''
                       }`}
                       style={{ 
@@ -395,7 +412,7 @@ export default function AcademicCalendar() {
 
                   {/* Event Content */}
                   <div className="flex-1 pl-6">
-                    <div className={`bg-white p-6 rounded-xl shadow-md border-l-4 transition-all duration-200 group-hover:shadow-xl group-hover:scale-105 ${
+                    <div className={`bg-white p-6 rounded-xl shadow-md border-l-4 transition-shadow duration-200 group-hover:shadow-lg ${
                       isCompleted ? 'bg-green-50' : ''
                     }`}
                          style={{ borderColor: isCompleted ? '#50c34e' : event.color }}>
