@@ -1,26 +1,176 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  /* === Font Sizes === */
+  /* @link https://utopia.fyi/type/calculator?c=375,16,1.333,1728,20,1.333,6,1,&s=0.75|0.5|0.25,1.5|2|3|4|6,s-l&g=s,l,xl,12 */
+
+  /* text--1: 12.8px → 16px */
+  --text--1: clamp(0.8rem, 0.7446rem + 0.2365vw, 1rem);
+  /* text 0: 16px → 20px */
+  --text-0: clamp(1rem, 0.9307rem + 0.2956vw, 1.25rem);
+  /* text 1: 20px → 25px */
+  --text-1: clamp(1.25rem, 1.1634rem + 0.3695vw, 1.5625rem);
+  /* text 2: 25px → 31.25px */
+  --text-2: clamp(1.5625rem, 1.4542rem + 0.4619vw, 1.9531rem);
+  /* text 3: 31.25px → 39.0625px */
+  --text-3: clamp(1.9531rem, 1.8178rem + 0.5774vw, 2.4414rem);
+  /* text 4: 39.0625px → 48.8281px */
+  --text-4: clamp(2.4414rem, 2.2722rem + 0.7218vw, 3.0518rem);
+  /* text 5: 48.8281px → 61.0352px */
+  --text-5: clamp(3.0518rem, 2.8403rem + 0.9022vw, 3.8147rem);
+  /* text 6: 61.0352px → 76.2939px */
+  --text-6: clamp(3.8147rem, 3.5504rem + 1.1278vw, 4.7684rem);
+  /* text 7: 76.2939px → 95.3674px */
+  --text-7: clamp(4.7684rem, 4.438rem + 1.4097vw, 5.9605rem);
+  /* text 8: 95.3674px → 119.2093px */
+  --text-8: clamp(5.9605rem, 5.5475rem + 1.7621vw, 7.4506rem);
+  --text-9: clamp(7.4506rem, 6.9343rem + 2.2027vw, 9.3132rem);
+  --text-10: clamp(9.3132rem, 8.6679rem + 2.7534vw, 11.6415rem);
+  --text-11: clamp(11.6415rem, 10.8349rem + 3.4417vw, 14.5519rem);
+  /* === Spacing === */
+  /* @link https://utopia.fyi/space/calculator?c=375,16,1.333,1728,20,1.333,6,1,&s=0.75|0.5|0.25|0.125,1.5|2|3|4|6|8,s-l&g=s,l,xl,12 */
+
+  --space-4xs: clamp(0.125rem, 0.1077rem + 0.0739vw, 0.1875rem);
+  --space-3xs: clamp(0.25rem, 0.2327rem + 0.0739vw, 0.3125rem);
+  --space-2xs: clamp(0.5rem, 0.4654rem + 0.1478vw, 0.625rem);
+  --space-xs: clamp(0.75rem, 0.698rem + 0.2217vw, 0.9375rem);
+  --space-s: clamp(1rem, 0.9307rem + 0.2956vw, 1.25rem);
+  --space-m: clamp(1.5rem, 1.3961rem + 0.4435vw, 1.875rem);
+  --space-l: clamp(2rem, 1.8614rem + 0.5913vw, 2.5rem);
+  --space-xl: clamp(3rem, 2.7921rem + 0.8869vw, 3.75rem);
+  --space-2xl: clamp(4rem, 3.7228rem + 1.1826vw, 5rem);
+  --space-3xl: clamp(6rem, 5.5843rem + 1.7738vw, 7.5rem);
+  --space-4xl: clamp(8rem, 7.4457rem + 2.3651vw, 10rem);
+
+  /* One-up pairs */
+  --space-4xs-3xs: clamp(0.125rem, 0.073rem + 0.2217vw, 0.3125rem);
+  --space-3xs-2xs: clamp(0.25rem, 0.1461rem + 0.4435vw, 0.625rem);
+  --space-2xs-xs: clamp(0.5rem, 0.3787rem + 0.5174vw, 0.9375rem);
+  --space-xs-s: clamp(0.75rem, 0.6114rem + 0.5913vw, 1.25rem);
+  --space-s-m: clamp(1rem, 0.7575rem + 1.0347vw, 1.875rem);
+  --space-m-l: clamp(1.5rem, 1.2228rem + 1.1826vw, 2.5rem);
+  --space-l-xl: clamp(2rem, 1.515rem + 2.0695vw, 3.75rem);
+  --space-xl-2xl: clamp(3rem, 2.4457rem + 2.3651vw, 5rem);
+  --space-2xl-3xl: clamp(4rem, 3.0299rem + 4.139vw, 7.5rem);
+  --space-3xl-4xl: clamp(6rem, 4.8914rem + 4.7302vw, 10rem);
+
+  /* Custom pairs */
+  --space-s-l: clamp(1rem, 0.5843rem + 1.7738vw, 2.5rem);
+
+  /* === Colors === */
+  --color-black: #1a1a1a;
+  --color-dark-purple: #231d24;
+  --color-light-purple: #514454;
+  --color-pink: #fd68ce;
+  --color-green: #b7e862;
+  --color-blue: #547eff;
+  --color-white: #f2ecf4;
+
+  /* === Border Radius === */
+  --border-radius-sm: 0.25rem;
+  --border-radius-md: 0.5rem;
+
+  /* === Animations === */
+  --ease-smooth: cubic-bezier(0.4, 0.15, 0.6, 0.85);
+  --aelastic: cubic-bezier(0.52, 1.27, 0.72, 1);
+
+  /* === Pre-calculations === */
+  --navbar-height: calc(0rem);
+  --min-page-height: calc(100dvh - var(--navbar-height));
+
+  /* === Shadows === */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@layer base {
+  small {
+    font-size: var(--text--1);
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  p {
+    font-size: var(--text-0);
+  }
+
+  h6 {
+    font-size: var(--text-1);
+  }
+
+  h5 {
+    font-size: var(--text-2);
+  }
+
+  h4 {
+    font-size: var(--text-3);
+  }
+
+  h3 {
+    font-size: var(--text-4);
+  }
+
+  h2 {
+    font-size: var(--text-5);
+  }
+
+  h1 {
+    font-size: var(--text-6);
+  }
+
+  body {
+    font-size: var(--text-0);
+    font-family: var(--font-pixel);
+    transition: ease-in-out;
+    font-weight: 400;
+    background-color: var(--color-black);
+    color: var(--color-white);
+  }
+
+  main {
+    margin-top: var(--navbar-height);
+    min-height: calc(100dvh - var(--navbar-height));
+    background-color: var(--color-dark-purple);
+  }
+
+  section {
+    padding-top: var(--space-2xl);
+    margin-bottom: var(--space-2xl);
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  a {
+    cursor: pointer;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  .no_line_height {
+    line-height: 1 !important;
+  }
+
+  .large-title {
+    font-size: var(--text-8) !important;
+    letter-spacing: calc(var(--text-8) * 0.01) !important;
+    word-spacing: calc(var(--text-8) * 0.01) !important;
+    line-height: 1 !important;
+  }
+
+  .mytext_shadow {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3) !important;
+  }
+
+  .title {
+    font-size: var(--text-2);
+    font-weight: bold;
+    margin-bottom: var(--space-xs-s);
+  }
+
+  .myshadow {
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+  }
 }
