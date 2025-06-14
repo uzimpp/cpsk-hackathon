@@ -29,15 +29,15 @@ interface CSVRow {
 }
 
 const categories = {
-  กิจกรรม: { name: 'กิจกรรม', color: '#3b82f6', icon: '🎭' },
-  ทั่วไป: { name: 'ทั่วไป', color: '#6b7280', icon: '📋' },
-  สำคัญ: { name: 'สำคัญ', color: '#dc2626', icon: '⭐' }
+  กิจกรรม: { name: 'กิจกรรม', color: '#50c34e', icon: '🎭' },
+  ทั่วไป: { name: 'ทั่วไป', color: '#b3deb2', icon: '📋' },
+  สำคัญ: { name: 'สำคัญ', color: '#174d20', icon: '⭐' }
 };
 
 const semesterData = {
-  'first': { name: 'เทอมต้น', file: '/data/first-sem.csv', color: '#3b82f6' },
-  'second': { name: 'เทอมปลาย', file: '/data/sec-sem.csv', color: '#10b981' }, 
-  'summer': { name: 'เทอมภาคฤดูร้อน', file: '/data/summer.csv', color: '#f59e0b' }
+  'first': { name: 'เทอมต้น', file: '/data/first-sem.csv', color: '#50c34e' },
+  'second': { name: 'เทอมปลาย', file: '/data/sec-sem.csv', color: '#174d20' }, 
+  'summer': { name: 'เทอมภาคฤดูร้อน', file: '/data/summer.csv', color: '#b3deb2' }
 };
 
 export default function AcademicCalendar() {
@@ -100,17 +100,17 @@ export default function AcademicCalendar() {
       
       if (!title || !dateText || dateText === '-') return;
 
-      // Determine category based on keywords
-      let category: 'กิจกรรม' | 'ทั่วไป' | 'สำคัญ' = 'ทั่วไป';
-      let color = '#6b7280';
+             // Determine category based on keywords
+       let category: 'กิจกรรม' | 'ทั่วไป' | 'สำคัญ' = 'ทั่วไป';
+       let color = '#b3deb2';
 
-      if (title.includes('สอบ') || title.includes('เปิดภาค') || title.includes('ลงทะเบียน')) {
-        category = 'สำคัญ';
-        color = '#dc2626';
-      } else if (title.includes('เปลี่ยนแปลง') || title.includes('ถอนรายวิชา')) {
-        category = 'กิจกรรม';
-        color = '#3b82f6';
-      }
+             if (title.includes('สอบ') || title.includes('เปิดภาค') || title.includes('ลงทะเบียน')) {
+         category = 'สำคัญ';
+         color = '#174d20';
+       } else if (title.includes('เปลี่ยนแปลง') || title.includes('ถอนรายวิชา')) {
+         category = 'ทั่วไป';
+         color = '#50c34e';
+       }
 
       newEvents.push({
         id: `${selectedSemester}-${index}`,
@@ -169,18 +169,18 @@ export default function AcademicCalendar() {
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#f4f6f4' }}>
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 shadow-lg sticky top-0 z-10">
+      <div className="bg-gradient-to-r from-green-600 to-green-800 shadow-lg sticky top-0 z-10" style={{ background: 'linear-gradient(135deg, #50c34e 0%, #174d20 100%)' }}>
         <div className="max-w-6xl mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg">
-                <AcademicCapIcon className="w-7 h-7 text-blue-600" />
+                <AcademicCapIcon className="w-7 h-7" style={{ color: '#50c34e' }} />
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-white">
                   📚 ปฏิทินการศึกษา
                 </h1>
-                <p className="text-blue-100 text-sm mt-1">
+                <p className="text-green-100 text-sm mt-1">
                   ติดตามกิจกรรมและการดำเนินงานของมหาวิทยาลัย
                 </p>
               </div>
@@ -189,7 +189,7 @@ export default function AcademicCalendar() {
             <div className="flex items-center gap-4">
               {/* Academic Year Info */}
               <div className="text-right">
-                <div className="text-xs text-blue-100">ปีการศึกษา 2568</div>
+                <div className="text-xs text-green-100">ปีการศึกษา 2568</div>
                 <div className="text-sm font-medium text-white">
                   {events.length} กิจกรรมทั้งหมด
                 </div>
@@ -197,7 +197,7 @@ export default function AcademicCalendar() {
               
               {/* Current Date */}
               <div className="bg-white bg-opacity-20 rounded-lg px-4 py-2">
-                <div className="text-xs text-blue-100">วันที่ปัจจุบัน</div>
+                <div className="text-xs text-green-100">วันที่ปัจจุบัน</div>
                 <div className="text-sm font-medium text-white">
                   {new Date().toLocaleDateString('th-TH', {
                     year: 'numeric',
@@ -210,7 +210,7 @@ export default function AcademicCalendar() {
           </div>
 
           {/* Progress Bar */}
-          <div className="mt-4 bg-blue-500 bg-opacity-30 rounded-full h-2">
+          <div className="mt-4 bg-green-500 bg-opacity-30 rounded-full h-2">
             <div 
               className="h-2 rounded-full transition-all duration-500 bg-white shadow-sm"
               style={{ width: `${progressPercentage}%` }}
@@ -221,25 +221,26 @@ export default function AcademicCalendar() {
 
       <div className="max-w-6xl mx-auto px-6 py-8">
         {/* Semester Selection */}
-        <div className="bg-white rounded-xl shadow-sm p-6 mb-8" style={{ borderLeft: '4px solid #3b82f6' }}>
+        <div className="bg-white rounded-xl shadow-sm p-6 mb-8" style={{ borderLeft: '4px solid #50c34e' }}>
           <div className="flex flex-col lg:flex-row gap-6 items-center">
             {/* Semester Buttons */}
             <div className="flex-1">
-              <h3 className="text-lg font-semibold mb-4 text-gray-800">เลือกภาคการศึกษา</h3>
+              <h3 className="text-lg font-semibold mb-4" style={{ color: '#182411' }}>เลือกภาคการศึกษา</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 {Object.entries(semesterData).map(([key, semester]) => (
                   <button
                     key={key}
                     onClick={() => setSelectedSemester(key as 'first' | 'second' | 'summer')}
-                    className={`px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200 border-2 ${
-                      selectedSemester === key
-                        ? 'text-white shadow-lg transform scale-105'
-                        : 'text-gray-600 bg-gray-50 border-gray-200 hover:bg-gray-100 hover:border-gray-300'
-                    }`}
-                    style={{
-                      backgroundColor: selectedSemester === key ? semester.color : undefined,
-                      borderColor: selectedSemester === key ? semester.color : undefined
-                    }}
+                                                                className={`px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200 border-2 ${
+                        selectedSemester === key
+                          ? 'text-white shadow-lg transform scale-105'
+                          : 'bg-gray-50 border-gray-200 hover:bg-gray-100 hover:border-gray-300'
+                      }`}
+                      style={{
+                        backgroundColor: selectedSemester === key ? semester.color : undefined,
+                        borderColor: selectedSemester === key ? semester.color : undefined,
+                        color: selectedSemester !== key ? '#182411' : undefined
+                      }}
                   >
                     {semester.name}
                   </button>
@@ -249,16 +250,17 @@ export default function AcademicCalendar() {
 
             {/* Language Toggle */}
             <div className="flex flex-col items-center">
-              <h3 className="text-lg font-semibold mb-4 text-gray-800">หลักสูตร</h3>
+              <h3 className="text-lg font-semibold mb-4" style={{ color: '#182411' }}>หลักสูตร</h3>
               <div className="flex items-center gap-4 bg-gray-100 rounded-full p-2">
-                <span className={`text-sm font-medium transition-colors duration-200 ${!isInternational ? 'text-blue-600' : 'text-gray-500'}`}>
+                <span className={`text-sm font-medium transition-colors duration-200`} style={{ color: !isInternational ? '#50c34e' : '#b3deb2' }}>
                   ไทย
                 </span>
                 <button
                   onClick={() => setIsInternational(!isInternational)}
-                  className={`relative w-14 h-7 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
-                    isInternational ? 'bg-green-500' : 'bg-blue-500'
-                  }`}
+                  className={`relative w-14 h-7 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2`}
+                  style={{ 
+                    backgroundColor: isInternational ? '#174d20' : '#50c34e'
+                  }}
                 >
                   <div
                     className={`absolute top-1 w-5 h-5 bg-white rounded-full shadow-md transition-transform duration-300 ${
@@ -266,7 +268,7 @@ export default function AcademicCalendar() {
                     }`}
                   />
                 </button>
-                <span className={`text-sm font-medium transition-colors duration-200 ${isInternational ? 'text-green-600' : 'text-gray-500'}`}>
+                <span className={`text-sm font-medium transition-colors duration-200`} style={{ color: isInternational ? '#174d20' : '#b3deb2' }}>
                   นานาชาติ
                 </span>
               </div>
@@ -277,7 +279,7 @@ export default function AcademicCalendar() {
 
 
         {/* Filters */}
-        <div className="bg-white rounded-xl shadow-sm p-6 mb-8" style={{ borderLeft: '4px solid #3b82f6' }}>
+        <div className="bg-white rounded-xl shadow-sm p-6 mb-8" style={{ borderLeft: '4px solid #50c34e' }}>
           <div className="flex flex-col md:flex-row gap-4">
             {/* Search */}
             <div className="flex-1 relative">
@@ -287,8 +289,8 @@ export default function AcademicCalendar() {
                 placeholder="ค้นหากิจกรรม, สอบ, หรือเหตุการณ์..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none text-black"
-                style={{ backgroundColor: 'white' }}
+                className="w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:outline-none"
+                style={{ color: '#182411', backgroundColor: 'white' }}
               />
             </div>
 
@@ -298,9 +300,13 @@ export default function AcademicCalendar() {
                 onClick={() => setSelectedCategory('all')}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                   selectedCategory === 'all' 
-                    ? 'bg-blue-600 text-white shadow-md' 
-                    : 'text-gray-600 bg-gray-100 hover:bg-gray-200'
+                    ? 'text-white shadow-md' 
+                    : 'bg-gray-100 hover:bg-gray-200'
                 }`}
+                style={{
+                  backgroundColor: selectedCategory === 'all' ? '#50c34e' : undefined,
+                  color: selectedCategory !== 'all' ? '#182411' : undefined
+                }}
               >
                 ทั้งหมด
               </button>
@@ -311,9 +317,12 @@ export default function AcademicCalendar() {
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
                     selectedCategory === key 
                       ? 'text-white shadow-md' 
-                      : 'text-gray-600 bg-gray-100 hover:bg-gray-200'
+                      : 'bg-gray-100 hover:bg-gray-200'
                   }`}
-                  style={{ backgroundColor: selectedCategory === key ? cat.color : undefined }}
+                  style={{
+                    backgroundColor: selectedCategory === key ? cat.color : undefined,
+                    color: selectedCategory !== key ? '#182411' : undefined
+                  }}
                 >
                   <span>{cat.icon}</span>
                   {cat.name}
@@ -327,7 +336,7 @@ export default function AcademicCalendar() {
         <div className="bg-white rounded-xl shadow-sm p-8 relative">
           <div className="ml-[240px] relative flex flex-col" ref={timelineRef}>
             {/* Vertical line */}
-            <div className="absolute top-0 bottom-0 left-[30px] w-[3px] bg-gradient-to-b from-blue-400 via-purple-400 to-blue-400 z-0 rounded-full" />
+            <div className="absolute top-0 bottom-0 left-[30px] w-[3px] z-0 rounded-full" style={{ background: 'linear-gradient(to bottom, #50c34e, #174d20, #50c34e)' }} />
 
             {filteredEvents.map((event, idx) => {
               const isVisible = visibleEvents.has(event.id);
@@ -355,11 +364,11 @@ export default function AcademicCalendar() {
                         <CalendarIcon className="w-3 h-3" />
                         <span>วันที่</span>
                       </div>
-                      <div className="text-sm font-bold mb-1 text-black">
+                      <div className="text-sm font-bold mb-1" style={{ color: '#182411' }}>
                         {displayDate}
                       </div>
                       {event.semester && (
-                        <div className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded-full inline-block">
+                        <div className="text-xs px-2 py-1 rounded-full inline-block" style={{ backgroundColor: '#b3deb2', color: '#174d20' }}>
                           {event.semester}
                         </div>
                       )}
@@ -373,7 +382,7 @@ export default function AcademicCalendar() {
                         isCompleted ? 'animate-pulse' : ''
                       }`}
                       style={{ 
-                        backgroundColor: isCompleted ? '#10b981' : event.color,
+                        backgroundColor: isCompleted ? '#50c34e' : event.color,
                         opacity: isCompleted ? 1 : 0.7
                       }}
                     />
@@ -389,7 +398,7 @@ export default function AcademicCalendar() {
                     <div className={`bg-white p-6 rounded-xl shadow-md border-l-4 transition-all duration-200 group-hover:shadow-xl group-hover:scale-105 ${
                       isCompleted ? 'bg-green-50' : ''
                     }`}
-                         style={{ borderColor: isCompleted ? '#10b981' : event.color }}>
+                         style={{ borderColor: isCompleted ? '#50c34e' : event.color }}>
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-3">
@@ -404,7 +413,7 @@ export default function AcademicCalendar() {
                               </span>
                             )}
                             {!isCompleted && (
-                              <span className="text-xs px-3 py-1 rounded-full bg-blue-100 text-blue-800 font-medium">
+                              <span className="text-xs px-3 py-1 rounded-full font-medium" style={{ backgroundColor: '#b3deb2', color: '#174d20' }}>
                                 🔮 กำลังจะมาถึง
                               </span>
                             )}
