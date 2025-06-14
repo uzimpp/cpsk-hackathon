@@ -21,182 +21,116 @@ interface AcademicEvent {
   endDate?: string; // For date ranges
 }
 
+
+interface CSVRow {
+  กำหนดการ: string;
+  หลักสูตรภาษาไทย: string;
+  หลักสูตรนานาชาติ: string;
+}
+
 const categories = {
   กิจกรรม: { name: 'กิจกรรม', color: '#3b82f6', icon: '🎭' },
   ทั่วไป: { name: 'ทั่วไป', color: '#6b7280', icon: '📋' },
   สำคัญ: { name: 'สำคัญ', color: '#dc2626', icon: '⭐' }
 };
 
-export default function AcademicCalendar() {
-  const [events] = useState<AcademicEvent[]>([
-    {
-      id: '1',
-      date: '15 ก.ค.67',
-      title: 'เปิดรับสมัครนักศึกษาใหม่',
-      description: 'เปิดรับสมัครนักศึกษาใหม่ ปีการศึกษา 2567 ผ่านระบบ TCAS',
-      location: 'สำนักทะเบียนและประมวลผล',
-      category: 'สำคัญ',
-      color: '#dc2626',
-      semester: '1/2567'
-    },
-    {
-      id: '2',
-      date: '20 ส.ค.67',
-      title: 'วันปฐมนิเทศนักศึกษาใหม่',
-      description: 'กิจกรรมต้อนรับน้องใหม่ และแนะนำระบบการเรียนการสอน',
-      location: 'หอประชุมกาญจนาภิเษก',
-      category: 'กิจกรรม',
-      color: '#3b82f6',
-      semester: '1/2567'
-    },
-    {
-      id: '3',
-      date: '25 ส.ค.67',
-      endDate: '30 ส.ค.67',
-      title: 'สัปดาห์ปฐมนิเทศคณะ',
-      description: 'กิจกรรมปฐมนิเทศระดับคณะ แนะนำหลักสูตรและอาจารย์ประจำคณะ',
-      location: 'คณะต่างๆ',
-      category: 'กิจกรรม',
-      color: '#3b82f6',
-      semester: '1/2567'
-    },
-    {
-      id: '4',
-      date: '2 ก.ย.67',
-      title: 'เปิดภาคเรียนที่ 1/2567',
-      description: 'เริ่มการเรียนการสอนภาคเรียนที่ 1 ปีการศึกษา 2567',
-      location: 'ทุกอาคาร',
-      category: 'สำคัญ',
-      color: '#dc2626',
-      semester: '1/2567'
-    },
-    {
-      id: '5',
-      date: '15 ต.ค.67',
-      title: 'วันหยุดนักขัตฤกษ์',
-      description: 'วันคล้ายวันสวรรคต พระบาทสมเด็จพระบรมชนกาธิเบศร มหาภูมิพลอดุลยเดชมหาราช',
-      category: 'ทั่วไป',
-      color: '#6b7280',
-      semester: '1/2567'
-    },
-    {
-      id: '6',
-      date: '28 ต.ค.67',
-      endDate: '1 พ.ย.67',
-      title: 'สอบกลางภาค',
-      description: 'การสอบประเมินผลกลางภาคเรียนที่ 1/2567',
-      location: 'อาคารเรียนและสอบ',
-      category: 'สำคัญ',
-      color: '#dc2626',
-      semester: '1/2567'
-    },
-    {
-      id: '7',
-      date: '15 พ.ย.67',
-      title: 'งานสัปดาห์วิทยาศาสตร์',
-      description: 'จัดแสดงผลงานวิจัยและนวัตกรรมด้านวิทยาศาสตร์และเทคโนโลยี',
-      location: 'คณะวิทยาศาสตร์',
-      category: 'กิจกรรม',
-      color: '#3b82f6',
-      semester: '1/2567'
-    },
-    {
-      id: '8',
-      date: '5 ธ.ค.67',
-      title: 'วันคล้ายวันพระราชสมภพ ร.9',
-      description: 'วันหยุดราชการ วันคล้ายวันพระราชสมภพ พระบาทสมเด็จพระเจ้าอยู่หัว',
-      category: 'ทั่วไป',
-      color: '#6b7280',
-      semester: '1/2567'
-    },
-    {
-      id: '9',
-      date: '16 ธ.ค.67',
-      endDate: '20 ธ.ค.67',
-      title: 'สอบปลายภาค',
-      description: 'การสอบประเมินผลปลายภาคเรียนที่ 1/2567',
-      location: 'อาคารเรียนและสอบ',
-      category: 'สำคัญ',
-      color: '#dc2626',
-      semester: '1/2567'
-    },
-    {
-      id: '10',
-      date: '10 ม.ค.68',
-      title: 'เปิดภาคเรียนที่ 2/2567',
-      description: 'เริ่มการเรียนการสอนภาคเรียนที่ 2 ปีการศึกษา 2567',
-      location: 'ทุกอาคาร',
-      category: 'สำคัญ',
-      color: '#dc2626',
-      semester: '2/2567'
-    }
-  ]);
+const semesterData = {
+  'first': { name: 'เทอมต้น', file: '/data/first-sem.csv', color: '#3b82f6' },
+  'second': { name: 'เทอมปลาย', file: '/data/sec-sem.csv', color: '#10b981' }, 
+  'summer': { name: 'เทอมภาคฤดูร้อน', file: '/data/summer.csv', color: '#f59e0b' }
+};
 
+export default function AcademicCalendar() {
+  const [events, setEvents] = useState<AcademicEvent[]>([]);
+  const [csvData, setCsvData] = useState<{ [key: string]: CSVRow[] }>({});
+  const [selectedSemester, setSelectedSemester] = useState<'first' | 'second' | 'summer'>('first');
+  const [isInternational, setIsInternational] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [visibleEvents, setVisibleEvents] = useState<Set<string>>(new Set());
   const timelineRef = useRef<HTMLDivElement>(null);
 
-  // Function to parse Thai date and check if it has passed
-  const isEventCompleted = (event: AcademicEvent): boolean => {
-    const today = new Date();
-    const currentYear = today.getFullYear();
-    const currentMonth = today.getMonth() + 1;
-    const currentDay = today.getDate();
-
-    // Parse Thai date format (e.g., "15 ก.ค.67" or "28 ต.ค.67")
-    const parseThaiDate = (dateStr: string): Date | null => {
-      const thaiMonths: { [key: string]: number } = {
-        'ม.ค.': 1, 'ก.พ.': 2, 'มี.ค.': 3, 'เม.ย.': 4, 'พ.ค.': 5, 'มิ.ย.': 6,
-        'ก.ค.': 7, 'ส.ค.': 8, 'ก.ย.': 9, 'ต.ค.': 10, 'พ.ย.': 11, 'ธ.ค.': 12
-      };
-
-      const parts = dateStr.trim().split(' ');
-      if (parts.length !== 2) return null;
-
-      const day = parseInt(parts[0]);
-      const monthStr = parts[1];
+  // Load CSV data
+  useEffect(() => {
+    const loadCSVData = async () => {
+      const data: { [key: string]: CSVRow[] } = {};
       
-      if (isNaN(day)) return null;
-
-      let year: number;
-      let month: number;
-
-      // Handle month-year format (e.g., "ก.ค.67")
-      if (monthStr.includes('.')) {
-        const monthParts = monthStr.split('.');
-        if (monthParts.length === 3) {
-          const monthKey = `${monthParts[0]}.${monthParts[1]}.`;
-          month = thaiMonths[monthKey];
-          year = parseInt(monthParts[2]);
+      for (const [key, semester] of Object.entries(semesterData)) {
+        try {
+          const response = await fetch(semester.file);
+          const csvText = await response.text();
+          const rows = csvText.split('\n').filter(row => row.trim());
+          const headers = rows[0].split(',');
           
-          if (!month || isNaN(year)) return null;
+          const parsedData = rows.slice(1).map((row, index) => {
+            const values = row.split(',');
+            return {
+              กำหนดการ: values[0] || '',
+              หลักสูตรภาษาไทย: values[1] || '',
+              หลักสูตรนานาชาติ: values[2] || ''
+            };
+          }).filter(row => row.กำหนดการ.trim() !== '');
           
-          // Convert Thai year to Western year
-          if (year < 100) {
-            year = year + 2500; // Convert 67 to 2567
-          }
-          if (year > 2400) {
-            year = year - 543; // Convert Buddhist year to Christian year
-          }
-        } else {
-          return null;
+          data[key] = parsedData;
+        } catch (error) {
+          console.error(`Error loading ${semester.name}:`, error);
+          data[key] = [];
         }
-      } else {
-        return null;
       }
-
-      return new Date(year, month - 1, day);
+      
+      setCsvData(data);
     };
 
-    const eventDate = parseThaiDate(event.date);
-    if (!eventDate) return false;
+    loadCSVData();
+  }, []);
 
-    const endDate = event.endDate ? parseThaiDate(event.endDate) : eventDate;
-    if (!endDate) return false;
+  // Convert CSV data to events
+  useEffect(() => {
+    if (!csvData[selectedSemester]) {
+      setEvents([]);
+      return;
+    }
 
-    // Event is completed if current date is after the end date
-    return today > endDate;
+    const currentData = csvData[selectedSemester];
+    const newEvents: AcademicEvent[] = [];
+
+    currentData.forEach((row, index) => {
+      const title = row.กำหนดการ;
+      const dateText = isInternational ? row.หลักสูตรนานาชาติ : row.หลักสูตรภาษาไทย;
+      
+      if (!title || !dateText || dateText === '-') return;
+
+      // Determine category based on keywords
+      let category: 'กิจกรรม' | 'ทั่วไป' | 'สำคัญ' = 'ทั่วไป';
+      let color = '#6b7280';
+
+      if (title.includes('สอบ') || title.includes('เปิดภาค') || title.includes('ลงทะเบียน')) {
+        category = 'สำคัญ';
+        color = '#dc2626';
+      } else if (title.includes('เปลี่ยนแปลง') || title.includes('ถอนรายวิชา')) {
+        category = 'กิจกรรม';
+        color = '#3b82f6';
+      }
+
+      newEvents.push({
+        id: `${selectedSemester}-${index}`,
+        date: dateText,
+        title: title,
+        description: `${title} - ${semesterData[selectedSemester].name} ${isInternational ? 'หลักสูตรนานาชาติ' : 'หลักสูตรภาษาไทย'}`,
+        category: category,
+        color: color,
+        semester: semesterData[selectedSemester].name
+      });
+    });
+
+    setEvents(newEvents);
+  }, [csvData, selectedSemester, isInternational]);
+
+  // Function to parse Thai date and check if it has passed
+  const isEventCompleted = (event: AcademicEvent): boolean => {
+    // For now, return false since the dates are complex ranges
+    // Could be enhanced to parse the date ranges properly
+    return false;
   };
 
   // Animation on scroll
@@ -230,7 +164,7 @@ export default function AcademicCalendar() {
   });
 
   const completedCount = events.filter(e => isEventCompleted(e)).length;
-  const progressPercentage = (completedCount / events.length) * 100;
+  const progressPercentage = events.length > 0 ? (completedCount / events.length) * 100 : 0;
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#f4f6f4' }}>
@@ -255,9 +189,9 @@ export default function AcademicCalendar() {
             <div className="flex items-center gap-4">
               {/* Academic Year Info */}
               <div className="text-right">
-                <div className="text-xs text-blue-100">ปีการศึกษา 2567</div>
+                <div className="text-xs text-blue-100">ปีการศึกษา 2568</div>
                 <div className="text-sm font-medium text-white">
-                  {completedCount}/{events.length} กิจกรรมผ่านไปแล้ว
+                  {events.length} กิจกรรมทั้งหมด
                 </div>
               </div>
               
@@ -286,32 +220,61 @@ export default function AcademicCalendar() {
       </div>
 
       <div className="max-w-6xl mx-auto px-6 py-8">
-        {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          {Object.entries(categories).map(([key, cat]) => {
-            const count = events.filter(e => e.category === key).length;
-            const completed = events.filter(e => e.category === key && isEventCompleted(e)).length;
-            
-            return (
-              <div key={key} className="bg-white rounded-xl p-4 shadow-sm border-l-4" style={{ borderColor: cat.color }}>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-lg">{cat.icon}</span>
-                      <span className="font-medium" style={{ color: '#182411' }}>{cat.name}</span>
-                    </div>
-                    <div className="text-sm" style={{ color: '#174d20' }}>
-                      {completed}/{count} ผ่านไปแล้ว
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-2xl font-bold" style={{ color: cat.color }}>{count}</div>
-                  </div>
-                </div>
+        {/* Semester Selection */}
+        <div className="bg-white rounded-xl shadow-sm p-6 mb-8" style={{ borderLeft: '4px solid #3b82f6' }}>
+          <div className="flex flex-col lg:flex-row gap-6 items-center">
+            {/* Semester Buttons */}
+            <div className="flex-1">
+              <h3 className="text-lg font-semibold mb-4 text-gray-800">เลือกภาคการศึกษา</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                {Object.entries(semesterData).map(([key, semester]) => (
+                  <button
+                    key={key}
+                    onClick={() => setSelectedSemester(key as 'first' | 'second' | 'summer')}
+                    className={`px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200 border-2 ${
+                      selectedSemester === key
+                        ? 'text-white shadow-lg transform scale-105'
+                        : 'text-gray-600 bg-gray-50 border-gray-200 hover:bg-gray-100 hover:border-gray-300'
+                    }`}
+                    style={{
+                      backgroundColor: selectedSemester === key ? semester.color : undefined,
+                      borderColor: selectedSemester === key ? semester.color : undefined
+                    }}
+                  >
+                    {semester.name}
+                  </button>
+                ))}
               </div>
-            );
-          })}
+            </div>
+
+            {/* Language Toggle */}
+            <div className="flex flex-col items-center">
+              <h3 className="text-lg font-semibold mb-4 text-gray-800">หลักสูตร</h3>
+              <div className="flex items-center gap-4 bg-gray-100 rounded-full p-2">
+                <span className={`text-sm font-medium transition-colors duration-200 ${!isInternational ? 'text-blue-600' : 'text-gray-500'}`}>
+                  ไทย
+                </span>
+                <button
+                  onClick={() => setIsInternational(!isInternational)}
+                  className={`relative w-14 h-7 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                    isInternational ? 'bg-green-500' : 'bg-blue-500'
+                  }`}
+                >
+                  <div
+                    className={`absolute top-1 w-5 h-5 bg-white rounded-full shadow-md transition-transform duration-300 ${
+                      isInternational ? 'translate-x-7' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+                <span className={`text-sm font-medium transition-colors duration-200 ${isInternational ? 'text-green-600' : 'text-gray-500'}`}>
+                  นานาชาติ
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
+
+
 
         {/* Filters */}
         <div className="bg-white rounded-xl shadow-sm p-6 mb-8" style={{ borderLeft: '4px solid #3b82f6' }}>
