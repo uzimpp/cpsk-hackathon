@@ -1,120 +1,184 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export default function SignIn() {
-  const [email, setEmail] = useState("");
+  const [studentId, setStudentId] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+
+  const validateStudentId = (id: string) => {
+    return /^\d{10}$/.test(id);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError("");
 
-    try {
-      // Replace this with actual login logic (e.g., call to API or next-auth)
-      console.log("Sign in:", { email, password });
-
-      // Simulate delay (remove in prod)
-      await new Promise((r) => setTimeout(r, 1000));
-
-      // Simulate login error
-      // throw new Error("Invalid credentials");
-    } catch (err: any) {
-      setError(err.message || "เกิดข้อผิดพลาด กรุณาลองใหม่");
-    } finally {
-      setLoading(false);
+    // Validate student ID format
+    if (!validateStudentId(studentId)) {
+      setError("กรุณากรอกรหัสนักศึกษา 10 หลัก");
+      return;
     }
+
+    // Validate password is not empty
+    if (!password) {
+      setError("กรุณากรอกรหัสผ่าน");
+      return;
+    }
+
+    setIsLoading(true);
+
+    // Simulate API call delay
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    // Accept any valid student ID and password
+    router.push("/profile");
+
+    setIsLoading(false);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white px-4">
-      <div className="w-full max-w-md p-8 space-y-6 bg-stone-200 rounded-2xl shadow-md transition-all">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900">ยินดีต้อนรับกลับ</h1>
-          <p className="mt-2 text-sm text-gray-600">
-            ยังไม่มีบัญชี?{" "}
-            <Link
-              href="/signup"
-              className="font-medium text-light-green hover:text-green-600 transition-colors"
-            >
-              สมัครสมาชิก
-            </Link>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b  bg-white py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <div>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            เข้าสู่ระบบ KU Connect
+          </h2>
+          <p className="mt-2 text-center text-sm text-gray-600">
+            ระบบเชื่อมต่อชุมชนมหาวิทยาลัยเกษตรศาสตร์
           </p>
         </div>
-
-        <form className="space-y-5" onSubmit={handleSubmit}>
-          <div className="space-y-4">
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <div className="rounded-md shadow-sm -space-y-px">
             <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700"
-              >
-                อีเมล
+              <label htmlFor="studentId" className="sr-only">
+                รหัสนักศึกษา
               </label>
               <input
-                id="email"
-                type="email"
+                id="studentId"
+                name="studentId"
+                type="text"
                 required
-                autoComplete="email"
-                className="w-full px-4 py-2.5 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-light-green focus:border-transparent transition-colors"
-                placeholder="your@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                maxLength={10}
+                className="appearance-none rounded-t-md relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                placeholder="bxxxxxxxxx"
+                value={studentId}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/\D/g, "");
+                  setStudentId(value);
+                  setError("");
+                }}
               />
             </div>
-
             <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700"
-              >
+              <label htmlFor="password" className="sr-only">
                 รหัสผ่าน
               </label>
               <input
                 id="password"
+                name="password"
                 type="password"
                 required
-                autoComplete="current-password"
-                className="w-full px-4 py-2.5 text-gray-900 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-light-green focus:border-transparent transition-colors"
-                placeholder="••••••••"
+                className="appearance-none rounded-b-md relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                placeholder="รหัสผ่าน"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setError("");
+                }}
               />
             </div>
           </div>
 
-          <div className="flex items-center justify-between text-sm">
-            <label className="flex items-center">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
               <input
+                id="remember-me"
+                name="remember-me"
                 type="checkbox"
-                className="h-4 w-4 text-light-green focus:ring-light-green border-gray-300 rounded"
+                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
-              <span className="ml-2 text-gray-700">จดจำฉัน</span>
-            </label>
+              <label
+                htmlFor="remember-me"
+                className="ml-2 block text-sm text-gray-900"
+              >
+                จดจำฉัน
+              </label>
+            </div>
 
-            <Link
-              href="/forgot-password"
-              className="text-light-green hover:text-green-600"
-            >
-              ลืมรหัสผ่าน?
-            </Link>
+            <div className="text-sm">
+              <Link
+                href="/forgot-password"
+                className="font-medium text-blue-600 hover:text-blue-500"
+              >
+                ลืมรหัสผ่าน?
+              </Link>
+            </div>
           </div>
 
           {error && (
-            <div className="text-red-500 text-sm text-center">{error}</div>
+            <div className="rounded-md bg-red-50 p-4">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg
+                    className="h-5 w-5 text-red-400"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm text-red-700">{error}</p>
+                </div>
+              </div>
+            </div>
           )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-3 px-4 bg-light-green text-white rounded-lg font-medium hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-light-green transition-all"
-          >
-            {loading ? "กำลังเข้าสู่ระบบ..." : "เข้าสู่ระบบ"}
-          </button>
+          <div>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              {isLoading ? (
+                <>
+                  <svg
+                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                  กำลังเข้าสู่ระบบ...
+                </>
+              ) : (
+                "เข้าสู่ระบบ"
+              )}
+            </button>
+          </div>
         </form>
       </div>
     </div>
