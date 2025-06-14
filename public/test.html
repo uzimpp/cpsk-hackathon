@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Connected Timeline</title>
+  <style>
+    body {
+      font-family: "Sarabun", sans-serif;
+      background-color: #f4f4f4;
+      padding: 2rem;
+    }
+
+    .timeline-container {
+      max-width: 1000px;
+      margin: auto;
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    }
+
+    .timeline {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      margin-left: 200px;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 25px; /* aligns with bullet center */
+      width: 2px;
+      background: #ccc;
+      z-index: 0;
+    }
+
+    .event {
+      position: relative;
+      display: flex;
+      margin-bottom: 2.5rem;
+    }
+
+    .date {
+      position: absolute;
+      left: -220px;
+      width: 180px;
+      text-align: right;
+      font-weight: bold;
+      color: #444;
+      top: 0;
+    }
+
+    .marker {
+      position: relative;
+      width: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .outer-circle {
+      width: 16px;
+      height: 16px;
+      background: white;
+      border: 2px solid #0d6efd;
+      border-radius: 50%;
+      position: relative;
+      z-index: 1;
+    }
+
+    .inner-dot {
+      width: 6px;
+      height: 6px;
+      background: #0d6efd;
+      border-radius: 50%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .description {
+      color: #003f3f;
+      font-size: 1rem;
+      flex: 1;
+      padding-left: 10px;
+    }
+
+    /* Optional: Thai font */
+    @import url('https://fonts.googleapis.com/css2?family=Sarabun&display=swap');
+  </style>
+</head>
+<body>
+  <div class="timeline-container">
+    <div class="timeline">
+      
+      <div class="event">
+        <div class="date">1 เม.ย. 2568–20 มิ.ย. 2568</div>
+        <div class="marker">
+          <div class="outer-circle">
+            <div class="inner-dot"></div>
+          </div>
+        </div>
+        <div class="description">
+          รับสมัครนักศึกษาใหม่ส่วนกลางทางไปรษณีย์ (เฉพาะผู้ที่ไม่ได้สิทธิเทียบโอนหน่วยกิต)
+        </div>
+      </div>
+
+      <div class="event">
+        <div class="date">1 เม.ย. 2568–29 มิ.ย. 2568</div>
+        <div class="marker">
+          <div class="outer-circle">
+            <div class="inner-dot"></div>
+          </div>
+        </div>
+        <div class="description">
+          ดาวน์โหลดใบสมัครและระเบียบการรับสมัครนักศึกษาใหม่ได้ www.ru.ac.th, www.regis.ru.ac.th
+        </div>
+      </div>
+
+      <div class="event">
+        <div class="date">25 มิ.ย. 2568–29 มิ.ย. 2568</div>
+        <div class="marker">
+          <div class="outer-circle">
+            <div class="inner-dot"></div>
+          </div>
+        </div>
+        <div class="description">
+          รับสมัครและลงทะเบียนเรียนนักศึกษาใหม่ และนักศึกษาเทียบโอนหน่วยกิต ที่มหาวิทยาลัย (ครั้งที่ 2)
+        </div>
+      </div>
+
+      <div class="event">
+        <div class="date">30 มิ.ย. 2568</div>
+        <div class="marker">
+          <div class="outer-circle">
+            <div class="inner-dot"></div>
+          </div>
+        </div>
+        <div class="description">
+          ปฐมนิเทศนักศึกษาใหม่ (ที่รามฯ 2)
+        </div>
+      </div>
+
+    </div>
+  </div>
+</body>
+</html>
