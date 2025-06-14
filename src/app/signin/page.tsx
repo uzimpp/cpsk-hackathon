@@ -2,16 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/contexts/AuthContext";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const router = useRouter();
-  const { signIn } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,8 +15,14 @@ export default function SignIn() {
     setError("");
 
     try {
-      await signIn(email, password);
-      router.push("/"); // Redirect to home page after successful login
+      // Replace this with actual login logic (e.g., call to API or next-auth)
+      console.log("Sign in:", { email, password });
+
+      // Simulate delay (remove in prod)
+      await new Promise((r) => setTimeout(r, 1000));
+
+      // Simulate login error
+      // throw new Error("Invalid credentials");
     } catch (err: any) {
       setError(err.message || "เกิดข้อผิดพลาด กรุณาลองใหม่");
     } finally {
@@ -109,7 +111,7 @@ export default function SignIn() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 px-4 bg-light-green text-white rounded-lg font-medium hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-light-green transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-3 px-4 bg-light-green text-white rounded-lg font-medium hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-light-green transition-all"
           >
             {loading ? "กำลังเข้าสู่ระบบ..." : "เข้าสู่ระบบ"}
           </button>
