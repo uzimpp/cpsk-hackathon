@@ -53,7 +53,7 @@ export default function TopicPage() {
       {/* Back Button */}
       <Button
         onClick={() => router.back()}
-        className="flex items-center gap-2 mb-6 px-4 py-2 border border-[#22c55e] text-[#22c55e] bg-white hover:bg-[#22c55e]/10 hover:text-[#22c55e]"
+        className="flex items-center gap-2 mb-6 px-4 py-2 border  bg-[#22c55e] hover:bg-[#22c55e]/10 hover:text-gray-100"
         type="button"
       >
         <ArrowLeftIcon className="h-5 w-5" />
