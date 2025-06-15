@@ -193,7 +193,7 @@ export default function AskAI() {
                   style={{ color: "#174d20" }}
                 />
               </div>
-              <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-[#174d20] to-[#50c34e] bg-clip-text text-transparent">
+              <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-[#174d20] to-[#50c344e] bg-clip-text text-transparent">
                 ยินดีต้อนรับสู่ KU AI Assistant
               </h2>
               <p className="mb-8 text-lg" style={{ color: "#174d20" }}>
@@ -204,13 +204,11 @@ export default function AskAI() {
                   "แนะนำคณะและสาขาที่เปิดสอนในมหาวิทยาลัยเกษตรศาสตร์",
                   "ขั้นตอนการลงทะเบียนเรียนและชำระเงินค่าเทอม",
                   "ข้อมูลหอพักนักศึกษาและสถานที่พักอาศัยใกล้มหาวิทยาลัย",
-                  "ระบบการเรียนการสอนและกิจกรรมเสริม",
-                  "ทุนการศึกษาและโอกาสในการศึกษาต่อ",
                 ].map((suggestion, index) => (
                   <button
                     key={index}
                     onClick={() => setInputValue(suggestion)}
-                    className="p-4 bg-white rounded-xl transition-all duration-200 hover:shadow-lg text-left border hover:scale-102 hover:border-[#50c34e] group"
+                    className="p-3 text-sm bg-white rounded-xl transition-all duration-200 hover:shadow-lg text-left border hover:scale-102 hover:border-[#50c34e] group"
                     style={{
                       borderColor: "#b3deb2",
                       color: "#182411",
@@ -229,7 +227,7 @@ export default function AskAI() {
             </div>
           </div>
         ) : (
-          <div className="max-w-4xl mx-auto space-y-6">
+          <div className="max-w-4xl mx-auto space-y-6 pt-16 pb-32">
             {messages.map((message, index) => (
               <div
                 key={message.id}
