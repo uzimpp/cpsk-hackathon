@@ -155,28 +155,25 @@ export default function AskAI() {
   };
 
   return (
-    <div
-      className="flex flex-col h-screen"
-      style={{ backgroundColor: "#f4f6f4" }}
-    >
+    <div className="flex flex-col h-screen bg-gradient-to-b from-[#f4f6f4] to-white">
       {/* Header */}
       <header
-        className="bg-white shadow-sm px-6 py-4"
+        className="bg-white shadow-sm px-6 py-4 sticky top-0 z-10 backdrop-blur-sm bg-white/80"
         style={{ borderBottom: "1px solid #b3deb2" }}
       >
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 max-w-4xl mx-auto">
           <div
-            className="w-10 h-10 rounded-full flex items-center justify-center shadow-sm"
+            className="w-10 h-10 rounded-full flex items-center justify-center shadow-sm transform hover:scale-105 transition-transform duration-200"
             style={{ backgroundColor: "#50c34e" }}
           >
             <ChatBubbleLeftRightIcon className="w-6 h-6 text-white" />
           </div>
           <div>
             <h1 className="text-xl font-bold" style={{ color: "#182411" }}>
-              AI Assistant
+              KU AI Assistant
             </h1>
             <p className="text-sm" style={{ color: "#174d20" }}>
-              ผู้ช่วย AI ที่พร้อมตอบคำถามของคุณ
+              ผู้ช่วย AI สำหรับนักศึกษาและบุคลากร มหาวิทยาลัยเกษตรศาสตร์
             </p>
           </div>
         </div>
@@ -186,41 +183,46 @@ export default function AskAI() {
       <div className="flex-1 overflow-y-auto p-6">
         {messages.length === 0 ? (
           <div className="flex items-center justify-center h-full">
-            <div className="text-center max-w-md">
+            <div className="text-center max-w-md animate-fade-in">
               <div
-                className="w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center shadow-lg"
+                className="w-24 h-24 rounded-full mx-auto mb-6 flex items-center justify-center shadow-lg transform hover:scale-105 transition-transform duration-300"
                 style={{ backgroundColor: "#b3deb2" }}
               >
                 <ChatBubbleLeftRightIcon
-                  className="w-10 h-10"
+                  className="w-12 h-12"
                   style={{ color: "#174d20" }}
                 />
               </div>
-              <h2
-                className="text-3xl font-bold mb-3"
-                style={{ color: "#182411" }}
-              >
-                ยินดีต้อนรับสู่ AI Assistant
+              <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-[#174d20] to-[#50c34e] bg-clip-text text-transparent">
+                ยินดีต้อนรับสู่ KU AI Assistant
               </h2>
               <p className="mb-8 text-lg" style={{ color: "#174d20" }}>
-                เริ่มสนทนาด้วยการพิมพ์คำถามหรือข้อความของคุณด้านล่าง
+                ผู้ช่วย AI ที่พร้อมตอบคำถามเกี่ยวกับมหาวิทยาลัยเกษตรศาสตร์
               </p>
               <div className="grid grid-cols-1 gap-3 text-left">
                 {[
-                  "อธิบายเกี่ยวกับ React Hooks",
-                  "วิธีการใช้ Next.js App Router",
-                  "Best Practices สำหรับ TypeScript",
+                  "แนะนำคณะและสาขาที่เปิดสอนในมหาวิทยาลัยเกษตรศาสตร์",
+                  "ขั้นตอนการลงทะเบียนเรียนและชำระเงินค่าเทอม",
+                  "ข้อมูลหอพักนักศึกษาและสถานที่พักอาศัยใกล้มหาวิทยาลัย",
+                  "ระบบการเรียนการสอนและกิจกรรมเสริม",
+                  "ทุนการศึกษาและโอกาสในการศึกษาต่อ",
                 ].map((suggestion, index) => (
                   <button
                     key={index}
                     onClick={() => setInputValue(suggestion)}
-                    className="p-4 bg-white rounded-xl transition-all duration-200 hover:shadow-md text-left border hover:scale-105"
+                    className="p-4 bg-white rounded-xl transition-all duration-200 hover:shadow-lg text-left border hover:scale-102 hover:border-[#50c34e] group"
                     style={{
                       borderColor: "#b3deb2",
                       color: "#182411",
                     }}
                   >
-                    {suggestion}
+                    <div className="flex items-center gap-2">
+                      <span className="flex-1">{suggestion}</span>
+                      <PaperAirplaneIcon
+                        className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity"
+                        style={{ color: "#50c34e" }}
+                      />
+                    </div>
                   </button>
                 ))}
               </div>
@@ -228,16 +230,16 @@ export default function AskAI() {
           </div>
         ) : (
           <div className="max-w-4xl mx-auto space-y-6">
-            {messages.map((message) => (
+            {messages.map((message, index) => (
               <div
                 key={message.id}
-                className={`flex gap-4 ${
+                className={`flex gap-4 animate-fade-in ${
                   message.role === "user" ? "justify-end" : "justify-start"
                 }`}
               >
                 {message.role === "assistant" && (
                   <div
-                    className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0 shadow-md"
+                    className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0 shadow-md transform hover:scale-105 transition-transform duration-200"
                     style={{ backgroundColor: "#50c34e" }}
                   >
                     AI
@@ -250,7 +252,7 @@ export default function AskAI() {
                   }`}
                 >
                   <div
-                    className={`p-4 rounded-2xl shadow-sm ${
+                    className={`p-4 rounded-2xl shadow-sm transform transition-all duration-200 hover:shadow-md ${
                       message.role === "user"
                         ? "ml-auto text-white"
                         : "bg-white border"
@@ -278,16 +280,17 @@ export default function AskAI() {
                       message.documents.length > 0 && (
                         <div className="mt-4 pt-4 border-t border-gray-200">
                           <h4
-                            className="text-sm font-semibold mb-2"
+                            className="text-sm font-semibold mb-2 flex items-center gap-2"
                             style={{ color: "#174d20" }}
                           >
+                            <ClipboardDocumentIcon className="w-4 h-4" />
                             อ้างอิงจากเอกสาร:
                           </h4>
                           <div className="space-y-2">
                             {message.documents.map((doc, index) => (
                               <div
                                 key={index}
-                                className="text-sm p-2 bg-gray-50 rounded"
+                                className="text-sm p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200"
                                 style={{ color: "#182411" }}
                               >
                                 {doc.content}
@@ -299,15 +302,30 @@ export default function AskAI() {
 
                     {message.role === "assistant" && message.usage && (
                       <div
-                        className="mt-2 text-xs"
+                        className="mt-3 pt-3 border-t border-gray-200 text-xs flex items-center gap-2"
                         style={{ color: "#174d20" }}
                       >
-                        <div>ผู้ใช้: {message.usage.user}</div>
-                        <div>
-                          การใช้งาน: {message.usage.usage_count}/
-                          {message.usage.usage_limit}
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <span>ผู้ใช้:</span>
+                            <span className="font-medium">
+                              {message.usage.user}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span>การใช้งาน:</span>
+                            <span className="font-medium">
+                              {message.usage.usage_count}/
+                              {message.usage.usage_limit}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span>คงเหลือ:</span>
+                            <span className="font-medium">
+                              {message.usage.remaining}
+                            </span>
+                          </div>
                         </div>
-                        <div>คงเหลือ: {message.usage.remaining}</div>
                       </div>
                     )}
                   </div>
@@ -318,12 +336,14 @@ export default function AskAI() {
                     }`}
                     style={{ color: "#174d20" }}
                   >
-                    <span>{formatTime(message.timestamp)}</span>
+                    <span className="opacity-75">
+                      {formatTime(message.timestamp)}
+                    </span>
                     {message.role === "assistant" && (
                       <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button
                           onClick={() => copyMessage(message.content)}
-                          className="p-1 rounded transition-colors"
+                          className="p-1.5 rounded-full hover:bg-gray-100 transition-colors"
                           style={{ color: "#174d20" }}
                           title="คัดลอก"
                         >
@@ -331,7 +351,7 @@ export default function AskAI() {
                         </button>
                         <button
                           onClick={() => shareMessage(message.content)}
-                          className="p-1 rounded transition-colors"
+                          className="p-1.5 rounded-full hover:bg-gray-100 transition-colors"
                           style={{ color: "#174d20" }}
                           title="แชร์"
                         >
@@ -344,7 +364,7 @@ export default function AskAI() {
 
                 {message.role === "user" && (
                   <div
-                    className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0 shadow-md"
+                    className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0 shadow-md transform hover:scale-105 transition-transform duration-200"
                     style={{ backgroundColor: "#174d20" }}
                   >
                     คุณ
@@ -354,7 +374,7 @@ export default function AskAI() {
             ))}
 
             {isLoading && (
-              <div className="flex gap-4 justify-start">
+              <div className="flex gap-4 justify-start animate-fade-in">
                 <div
                   className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0 shadow-md"
                   style={{ backgroundColor: "#50c34e" }}
@@ -365,20 +385,20 @@ export default function AskAI() {
                   className="bg-white rounded-2xl p-4 shadow-sm border"
                   style={{ borderColor: "#b3deb2" }}
                 >
-                  <div className="flex gap-1">
+                  <div className="flex gap-1.5">
                     <div
-                      className="w-2 h-2 rounded-full animate-bounce"
+                      className="w-2.5 h-2.5 rounded-full animate-bounce"
                       style={{ backgroundColor: "#50c34e" }}
                     ></div>
                     <div
-                      className="w-2 h-2 rounded-full animate-bounce"
+                      className="w-2.5 h-2.5 rounded-full animate-bounce"
                       style={{
                         backgroundColor: "#50c34e",
                         animationDelay: "0.1s",
                       }}
                     ></div>
                     <div
-                      className="w-2 h-2 rounded-full animate-bounce"
+                      className="w-2.5 h-2.5 rounded-full animate-bounce"
                       style={{
                         backgroundColor: "#50c34e",
                         animationDelay: "0.2s",
@@ -396,7 +416,7 @@ export default function AskAI() {
 
       {/* Input Area */}
       <div
-        className="bg-white shadow-lg p-6"
+        className="bg-white shadow-lg p-6 sticky bottom-0 backdrop-blur-sm bg-white/80"
         style={{ borderTop: "1px solid #b3deb2" }}
       >
         <form onSubmit={handleSubmit} className="max-w-4xl mx-auto">
@@ -430,17 +450,21 @@ export default function AskAI() {
             <button
               type="submit"
               disabled={!inputValue.trim() || isLoading}
-              className="p-4 text-white rounded-xl hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex-shrink-0 shadow-md hover:shadow-lg"
+              className="p-4 text-white rounded-xl hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex-shrink-0 shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95"
               style={{ backgroundColor: "#50c34e" }}
             >
               <PaperAirplaneIcon className="w-5 h-5" />
             </button>
           </div>
           <div
-            className="text-xs mt-3 text-center"
+            className="text-xs mt-3 text-center flex items-center justify-center gap-2"
             style={{ color: "#174d20" }}
           >
-            กด Enter เพื่อส่งข้อความ, Shift + Enter เพื่อขึ้นบรรทัดใหม่
+            <span className="opacity-75">กด Enter เพื่อส่งข้อความ</span>
+            <span className="w-1 h-1 rounded-full bg-[#b3deb2]"></span>
+            <span className="opacity-75">
+              Shift + Enter เพื่อขึ้นบรรทัดใหม่
+            </span>
           </div>
         </form>
       </div>
