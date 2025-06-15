@@ -13,10 +13,11 @@ export default function CreatePostPage() {
     title: "",
     content: "",
     faculty: "ทุกคณะ",
-    category: "",
+    category: [],
     tags: [],
   });
   const [newTagInput, setNewTagInput] = useState("");
+  const [newCategoryInput, setNewCategoryInput] = useState("");
 
   const handleAddTagFromInput = () => {
     const tagToAdd = newTagInput.trim();
@@ -33,6 +34,24 @@ export default function CreatePostPage() {
     });
   };
 
+  const handleAddCategoryFromInput = () => {
+    const categoryToAdd = newCategoryInput.trim();
+    if (categoryToAdd && !newPost.category.includes(categoryToAdd)) {
+      setNewPost({
+        ...newPost,
+        category: [...newPost.category, categoryToAdd],
+      });
+      setNewCategoryInput("");
+    }
+  };
+
+  const handleRemoveCategory = (categoryToRemove: string) => {
+    setNewPost({
+      ...newPost,
+      category: newPost.category.filter((cat) => cat !== categoryToRemove),
+    });
+  };
+
   const handleCreatePost = async () => {
     if (newPost.title.trim() && newPost.content.trim()) {
       const post: Post = {
@@ -43,24 +62,18 @@ export default function CreatePostPage() {
           id: "new",
           name: "ผู้ใช้งาน",
           faculty: newPost.faculty,
-          major: newPost.category,
+          major: newPost.category[0] || "",
           year: "1",
           avatar: "/avatar4.jpg",
         },
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        tags: [...newPost.tags, newPost.category],
+        tags: [...newPost.tags, ...newPost.category],
         viewCount: 1,
         likeCount: 0,
       };
 
-      // For now, we'll just log the new post and navigate back.
-      // In a real application, you'd send this to your backend.
       console.log("New Post:", post);
-
-      // Simulate saving to local storage (if applicable, otherwise remove)
-      // This part would depend on how your postsData is managed.
-      // For now, we'll just navigate back.
 
       try {
         const response = await fetch("/api/forum", {
@@ -70,7 +83,7 @@ export default function CreatePostPage() {
           },
           body: JSON.stringify({
             type: "posts",
-            data: post, // Sending only the new post, not the whole updatedPosts array
+            data: post,
           }),
         });
 
@@ -78,13 +91,9 @@ export default function CreatePostPage() {
           throw new Error("Failed to save post");
         }
 
-        // Optionally, if you want to refresh the forum page data after creation
-        // You might need to refetch posts on the main forum page or use a global state management.
-
-        router.push("/forum"); // Navigate back to the forum page
+        router.push("/forum");
       } catch (error) {
         console.error("Error saving post:", error);
-        // Handle error, maybe show an alert to the user
       }
     }
   };
@@ -120,81 +129,77 @@ export default function CreatePostPage() {
             </div>
           </div>
 
-          {/* Category Selection */}
+          {/* Category Selection with multi-select and add functionality */}
           <div>
             <label className="block text-gray-700 font-medium mb-2 text-lg">
               เลือกหมวดหมู่:
             </label>
-            <div className="w-full bg-[#E6F4EA] rounded-xl p-4 flex flex-wrap gap-2">
-              {CATEGORIES.map((category) => (
-                <Button
-                  key={category}
-                  className={`!px-5 !py-2 !rounded-full !font-medium !text-base transition-all ${
-                    newPost.category === category
-                      ? "!bg-[#22c55e] !text-white !border-[#22c55e]"
-                      : "!bg-white !text-gray-700 !border-2 !border-gray-300 hover:!bg-gray-100"
-                  }`}
-                  type="button"
-                  onClick={() => setNewPost({ ...newPost, category: category })}
-                >
-                  {category}
-                </Button>
-              ))}
-            </div>
-          </div>
+            <div className="w-full bg-[#E6F4EA] rounded-xl p-4 flex flex-wrap gap-2 border-2 border-[#22c55e]">
+              {[...new Set([...CATEGORIES, ...newPost.category])].map(
+                (category) => {
+                  const isSelected = newPost.category.includes(category);
+                  const isPredefined = CATEGORIES.includes(category);
 
-          {/* Custom Tags Input */}
-          <div>
-            <label className="block text-gray-700 font-medium mb-2 text-lg">
-              แท็ก (Optional):
-            </label>
-            <div className="w-full border-2 border-[#22c55e] rounded-xl p-4 text-gray-700 focus-within:ring-4 focus-within:ring-[#22c55e]/20 focus-within:border-[#22c55e] transition-all flex flex-wrap items-center gap-2">
-              {newPost.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="flex items-center bg-[#D1FAE5] text-[#059669] px-3 py-1 rounded-full text-sm font-medium"
-                >
-                  {tag}
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveTag(tag)}
-                    className="ml-2 text-[#059669] hover:text-[#047857]"
-                  >
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
+                  return (
+                    <Button
+                      key={category}
+                      className={`!px-5 !py-2 !rounded-full !font-medium !text-base transition-all flex items-center gap-2 ${
+                        isSelected
+                          ? "!bg-[#22c55e] !text-white !border-[#22c55e]"
+                          : "!bg-white !text-gray-700 !border-2 !border-gray-300 hover:!bg-gray-100"
+                      }`}
+                      type="button"
+                      onClick={() => {
+                        if (isSelected) {
+                          handleRemoveCategory(category);
+                        } else {
+                          setNewPost({
+                            ...newPost,
+                            category: [...newPost.category, category],
+                          });
+                        }
+                      }}
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </button>
-                </span>
-              ))}
+                      {category}
+                      {isSelected && !isPredefined && (
+                        <svg
+                          className="w-4 h-4 ml-1"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M6 18L18 6M6 6l12 12"
+                          />
+                        </svg>
+                      )}
+                    </Button>
+                  );
+                }
+              )}
+
               <input
                 type="text"
-                value={newTagInput}
-                onChange={(e) => setNewTagInput(e.target.value)}
+                placeholder="เพิ่มหมวดหมู่ใหม่"
+                className="px-4 py-2 border-2 border-gray-300 rounded-full text-base focus:ring-4 focus:ring-[#22c55e]/20 focus:border-[#22c55e] transition-all flex-1 min-w-[100px] outline-none bg-transparent placeholder-gray-400"
+                value={newCategoryInput}
+                onChange={(e) => setNewCategoryInput(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     e.preventDefault();
-                    handleAddTagFromInput();
+                    handleAddCategoryFromInput();
                   }
                 }}
-                placeholder="เพิ่มแท็กใหม่ (เช่น: โปรเจค, AI)"
-                className="flex-1 min-w-[100px] outline-none bg-transparent placeholder-gray-400"
               />
               <Button
-                type="button"
-                onClick={handleAddTagFromInput}
                 className="!px-4 !py-2 !rounded-full !bg-[#22c55e] !text-white hover:!bg-[#16a34a] transition-all"
+                type="button"
+                onClick={handleAddCategoryFromInput}
               >
-                เพิ่ม
+                +
               </Button>
             </div>
           </div>
@@ -230,18 +235,13 @@ export default function CreatePostPage() {
           </div>
         </div>
 
-        <div className="flex justify-end space-x-4 mt-8">
+        <div className="mt-8 flex justify-end">
           <Button
-            onClick={() => router.push("/forum")}
-            className="px-8 py-3 border-2 border-[#22c55e] text-[#22c55e] rounded-xl hover:bg-[#22c55e]/10 transition-all font-medium"
-          >
-            ยกเลิก
-          </Button>
-          <Button
+            type="button"
             onClick={handleCreatePost}
-            className="px-8 py-3 bg-[#22c55e] text-white rounded-xl hover:bg-[#16a34a] transition-all font-medium"
+            className="!px-8 !py-4 !rounded-xl !text-xl !font-semibold !bg-[#22c55e] !text-white hover:!bg-[#16a34a] transition-all duration-300"
           >
-            โพสกระทู้
+            สร้างโพสต์
           </Button>
         </div>
       </Card>

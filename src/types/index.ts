@@ -38,6 +38,6 @@ export interface NewPost {
   title: string;
   content: string;
   faculty: string;
-  category: string;
+  category: string[];
   tags: string[];
 }

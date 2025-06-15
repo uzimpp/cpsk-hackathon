@@ -15,7 +15,50 @@ export const useForum = () => {
   const [isTagPanelOpen, setIsTagPanelOpen] = useState(false);
   const [selectedSortOption, setSelectedSortOption] = useState("newest");
   const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
-  const [localPosts, setLocalPosts] = useState<Post[]>(postsData.posts);
+
+  // Aggressive data normalization for localPosts
+  const normalizePosts = (data: any): Post[] => {
+    if (!data || !Array.isArray(data)) {
+      return [];
+    }
+    return data
+      .flatMap((item) => {
+        // If an item is an array, flatten it and try to parse its elements as posts
+        if (Array.isArray(item)) {
+          return item
+            .map((subItem) => {
+              // Only return valid Post-like objects, or filter out non-objects/malformed ones
+              if (
+                typeof subItem === "object" &&
+                subItem !== null &&
+                "id" in subItem &&
+                "title" in subItem &&
+                "content" in subItem
+              ) {
+                return subItem as Post;
+              }
+              return null;
+            })
+            .filter(Boolean) as Post[]; // Filter out nulls
+        } else if (
+          typeof item === "object" &&
+          item !== null &&
+          "id" in item &&
+          "title" in item &&
+          "content" in item
+        ) {
+          // If an item is a direct Post-like object
+          return item as Post;
+        }
+        return null;
+      })
+      .filter(Boolean) as Post[]; // Filter out any top-level nulls
+  };
+
+  const [localPosts, setLocalPosts] = useState<Post[]>(() =>
+    normalizePosts(postsData.posts)
+  );
+
   const [localReplies, setLocalReplies] = useState<RepliesData>(
     repliesData as RepliesData
   );
@@ -30,6 +73,7 @@ export const useForum = () => {
   // Filter and sort posts
   const filteredAndSortedPosts = [...localPosts]
     .filter((post) => {
+      //console.log("useForum.ts: Filtering post:", post); // Removed previous log
       const matchesSearch =
         post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         post.content.toLowerCase().includes(searchQuery.toLowerCase());
@@ -68,28 +112,70 @@ export const useForum = () => {
   };
 
   // Handle post like
-  const handlePostLike = (postId: string) => {
-    setLocalPosts(
-      localPosts.map((post) => {
-        if (post.id === postId) {
-          const isLiked = likedPosts.has(postId);
-          setLikedPosts((prev) => {
-            const newSet = new Set(prev);
-            if (isLiked) {
-              newSet.delete(postId);
-            } else {
-              newSet.add(postId);
-            }
-            return newSet;
-          });
-          return {
-            ...post,
-            likeCount: isLiked ? post.likeCount - 1 : post.likeCount + 1,
-          };
-        }
-        return post;
-      })
+  const handlePostLike = async (postId: string) => {
+    const postToUpdate = localPosts.find((post) => post.id === postId);
+    if (!postToUpdate) return;
+
+    const isLiked = likedPosts.has(postId);
+    const newLikeCount = Math.max(
+      0,
+      isLiked ? postToUpdate.likeCount - 1 : postToUpdate.likeCount + 1
     );
+
+    // Optimistically update UI
+    setLocalPosts((prevPosts) =>
+      prevPosts.map((post) =>
+        post.id === postId ? { ...post, likeCount: newLikeCount } : post
+      )
+    );
+
+    // Update liked state
+    setLikedPosts((prev) => {
+      const newSet = new Set(prev);
+      if (isLiked) {
+        newSet.delete(postId);
+      } else {
+        newSet.add(postId);
+      }
+      return newSet;
+    });
+
+    // Persist change to backend
+    try {
+      const response = await fetch("/api/forum", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          type: "posts",
+          data: { id: postId, likeCount: newLikeCount },
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update like count");
+      }
+    } catch (error) {
+      console.error("Error updating like count:", error);
+      // Revert optimistic update if API call fails
+      setLocalPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post.id === postId
+            ? { ...post, likeCount: postToUpdate.likeCount }
+            : post
+        )
+      );
+      setLikedPosts((prev) => {
+        const newSet = new Set(prev);
+        if (isLiked) {
+          newSet.add(postId);
+        } else {
+          newSet.delete(postId);
+        }
+        return newSet;
+      });
+    }
   };
 
   // Handle reply like
