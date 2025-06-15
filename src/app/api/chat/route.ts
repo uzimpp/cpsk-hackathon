@@ -1,11 +1,16 @@
 import { NextResponse } from "next/server";
 
-const API_KEY =
-  process.env.AI_API_KEY ||
-  "rag_admin_dKb5HyxT2CMUxTyif-ZDZ48lOZyBmWTwejaDoQbETiA";
-const API_URL = process.env.AI_API_URL || "http://localhost:8000/query";
+const API_KEY = process.env.AI_API_KEY;
+const API_URL = process.env.AI_API_URL;
 
 export async function POST(request: Request) {
+  if (!API_URL || !API_KEY) {
+    return NextResponse.json(
+      { error: "AI API URL or API Key is not configured." },
+      { status: 500 }
+    );
+  }
+
   try {
     const { message } = await request.json();
 

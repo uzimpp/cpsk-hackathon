@@ -211,8 +211,8 @@ export default function AcademicCalendar() {
               
               {/* Current Date */}
               <div className="bg-white bg-opacity-20 rounded-lg px-4 py-2">
-                <div className="text-xs text-green-100">วันที่ปัจจุบัน</div>
-                <div className="text-sm font-medium text-white">
+                <div className="text-xs text-dark">วันที่ปัจจุบัน</div>
+                <div className="text-sm font-medium text-green-600">
                   {new Date().toLocaleDateString('th-TH', {
                     year: 'numeric',
                     month: 'short',
