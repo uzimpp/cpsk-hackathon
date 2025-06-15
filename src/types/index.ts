@@ -39,4 +39,5 @@ export interface NewPost {
   content: string;
   faculty: string;
   category: string;
+  tags: string[];
 }

@@ -4,8 +4,8 @@ import Card from "@/components/ui/Card";
 import { useForum } from "@/hooks/useForum";
 import { PostCard } from "@/components/forum/PostCard";
 import { FilterBar } from "@/components/forum/FilterBar";
-import { CreatePostModal } from "@/components/forum/CreatePostModal";
 import { Post } from "@/types";
+import Link from "next/link";
 
 export default function Forum() {
   const {
@@ -22,16 +22,12 @@ export default function Forum() {
     setIsFacultyDropdownOpen,
     isCategoryDropdownOpen,
     setIsCategoryDropdownOpen,
-    isCreatePostOpen,
-    setIsCreatePostOpen,
     isTagPanelOpen,
     setIsTagPanelOpen,
     selectedSortOption,
     setSelectedSortOption,
     isSortDropdownOpen,
     setIsSortDropdownOpen,
-    newPost,
-    setNewPost,
     localPosts,
     setLocalPosts,
     localReplies,
@@ -45,7 +41,6 @@ export default function Forum() {
 
     // Functions
     getReplyCount,
-    handleCreatePost,
     handlePostLike,
     handleReplyLike,
     resetFilters,
@@ -109,8 +104,8 @@ export default function Forum() {
       )}
 
       {/* Floating Action Button */}
-      <button
-        onClick={() => setIsCreatePostOpen(true)}
+      <Link
+        href="/forum/create"
         className="fixed bottom-8 right-8 bg-[#22c55e] text-white p-4 rounded-full shadow-lg hover:bg-[#16a34a] transition-all duration-300 hover:scale-110"
       >
         <svg
@@ -126,16 +121,7 @@ export default function Forum() {
             d="M12 4v16m8-8H4"
           />
         </svg>
-      </button>
-
-      {/* Create Post Modal */}
-      <CreatePostModal
-        isOpen={isCreatePostOpen}
-        onClose={() => setIsCreatePostOpen(false)}
-        newPost={newPost}
-        setNewPost={setNewPost}
-        onCreatePost={handleCreatePost}
-      />
+      </Link>
     </div>
   );
 }

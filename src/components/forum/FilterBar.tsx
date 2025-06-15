@@ -220,7 +220,7 @@ export const FilterBar = ({
         </div>
       )}
 
-      {/* Expanded tag filter area */}
+      {/* Expanded tag filter area (only for predefined tags) */}
       {isTagPanelOpen && (
         <div className="w-full bg-[#E6F4EA] rounded-xl p-6 flex flex-wrap gap-3 items-center">
           <Button

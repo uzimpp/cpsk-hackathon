@@ -15,12 +15,6 @@ export const useForum = () => {
   const [isTagPanelOpen, setIsTagPanelOpen] = useState(false);
   const [selectedSortOption, setSelectedSortOption] = useState("newest");
   const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
-  const [newPost, setNewPost] = useState<NewPost>({
-    title: "",
-    content: "",
-    faculty: "คณะเกษตร",
-    category: "การเรียน",
-  });
   const [localPosts, setLocalPosts] = useState<Post[]>(postsData.posts);
   const [localReplies, setLocalReplies] = useState<RepliesData>(
     repliesData as RepliesData
@@ -71,60 +65,6 @@ export const useForum = () => {
   // Get reply count for a post
   const getReplyCount = (postId: string) => {
     return (localReplies.replies[postId] || []).length;
-  };
-
-  // Create new post
-  const handleCreatePost = async () => {
-    if (newPost.title.trim() && newPost.content.trim()) {
-      const post: Post = {
-        id: Date.now().toString(),
-        title: newPost.title,
-        content: newPost.content,
-        author: {
-          id: "new",
-          name: "ผู้ใช้งาน",
-          faculty: newPost.faculty,
-          major: newPost.category,
-          year: "1",
-          avatar: "/avatar4.jpg",
-        },
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        tags: [newPost.category],
-        viewCount: 1,
-        likeCount: 0,
-      };
-
-      const updatedPosts = [...localPosts, post];
-      setLocalPosts(updatedPosts);
-
-      try {
-        const response = await fetch("/api/forum", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            type: "posts",
-            data: updatedPosts,
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to save post");
-        }
-      } catch (error) {
-        console.error("Error saving post:", error);
-      }
-
-      setNewPost({
-        title: "",
-        content: "",
-        faculty: "คณะเกษตร",
-        category: "การเรียน",
-      });
-      setIsCreatePostOpen(false);
-    }
   };
 
   // Handle post like
@@ -212,8 +152,6 @@ export const useForum = () => {
     setSelectedSortOption,
     isSortDropdownOpen,
     setIsSortDropdownOpen,
-    newPost,
-    setNewPost,
     localPosts,
     setLocalPosts,
     localReplies,
@@ -227,7 +165,6 @@ export const useForum = () => {
 
     // Functions
     getReplyCount,
-    handleCreatePost,
     handlePostLike,
     handleReplyLike,
     resetFilters,
