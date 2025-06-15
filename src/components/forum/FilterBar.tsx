@@ -61,7 +61,7 @@ export const FilterBar = ({
         <Button
           className={`!px-6 !py-3 !rounded-xl !font-medium !text-lg transition-all flex items-center gap-2 ${
             isFacultyActive
-              ? "!bg-[#22c55e] !text-white hover:!bg-[#16a34a]"
+              ? "!bg-green-600 !text-white hover:!bg-green-500"
               : "!bg-white !text-gray-700 !border-2 !border-gray-300 hover:!bg-gray-100"
           }`}
           type="button"
@@ -93,7 +93,7 @@ export const FilterBar = ({
         <Button
           className={`!px-6 !py-3 !rounded-xl !font-medium !text-lg transition-all flex items-center gap-2 ${
             isTagActive
-              ? "!bg-[#22c55e] !text-white hover:!bg-[#16a34a]"
+              ? "!bg-green-600 !text-white hover:!bg-green-500"
               : "!bg-white !text-gray-700 !border-2 !border-gray-300 hover:!bg-gray-100"
           }`}
           type="button"
@@ -195,11 +195,11 @@ export const FilterBar = ({
           {FACULTIES.map((faculty: string) => (
             <Button
               key={faculty}
-              className={`!px-5 !py-2 !rounded-full !bg-white !text-gray-700 !border-2 !border-gray-300 !font-medium !text-base transition-all ${
+              className={`!px-5 !py-2 !rounded-full  !text-gray-700 !border-2 !font-medium !text-base transition-all ${
                 selectedFaculty.includes(faculty) ||
                 (faculty === "ทุกคณะ" && selectedFaculty.length === 0)
-                  ? "!bg-[#22c55e] !text-white !border-[#22c55e]"
-                  : "hover:!bg-gray-100"
+                  ? "!bg-green-500 !text-white !border-none"
+                  : "bg-white !text-gray-700 hover:!bg-gray-200 !border-gray-300"
               }`}
               type="button"
               onClick={() => {
@@ -224,10 +224,10 @@ export const FilterBar = ({
       {isTagPanelOpen && (
         <div className="w-full bg-[#E6F4EA] rounded-xl p-6 flex flex-wrap gap-3 items-center">
           <Button
-            className={`!px-5 !py-2 !rounded-full !bg-white !text-gray-700 !border-2 !border-gray-300 !font-medium !text-base transition-all ${
+            className={`!px-5 !py-2 !rounded-full !border-2 !font-medium !text-base transition-all ${
               selectedTag.length === 0
-                ? "!bg-[#22c55e] !text-white !border-[#22c55e]"
-                : "hover:!bg-gray-100"
+                ? "!bg-green-500 !text-white !border-none"
+                : "bg-white !text-gray-700 hover:!bg-gray-200 !border-gray-300"
             }`}
             type="button"
             onClick={() => setSelectedTag([])}
@@ -237,10 +237,10 @@ export const FilterBar = ({
           {allTags.map((tag: string) => (
             <Button
               key={tag}
-              className={`!px-5 !py-2 !rounded-full !bg-white !text-gray-700 !border-2 !border-gray-300 !font-medium !text-base transition-all ${
+              className={`!px-5 !py-2 !rounded-full !border-2 !font-medium !text-base transition-all ${
                 selectedTag.includes(tag)
-                  ? "!bg-[#22c55e] !text-white !border-[#22c55e]"
-                  : "hover:!bg-gray-100"
+                  ? "!bg-green-500 !text-white !border-none"
+                  : "bg-white !text-gray-700 hover:!bg-gray-200 !border-gray-300"
               }`}
               type="button"
               onClick={() => {
